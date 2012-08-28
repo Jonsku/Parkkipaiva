@@ -1,6 +1,6 @@
 <?php
 //This line must be the first of the script
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT'];//."/parkkipaiva";
+$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
 //The 2 lines below are required to be able to keep track og logged in users
 ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."session");
 session_start();

@@ -99,7 +99,7 @@ function createStand(data, editMode){
         google.maps.event.addListener(newStand.marker, 'dblclick', function(){
             focusOnStand(this);
         });
-        
+        /*
         newStand.addListener("bookmark",function(stand){
                 if(typeof bookmark == 'function') { 
                         bookmark(stand); 
@@ -110,7 +110,7 @@ function createStand(data, editMode){
                         unmark(stand); 
                 }
         });
-        
+        */
         newStand.addListener("filter",function(stand){
             stand.marker.setVisible(false); 
         });
@@ -142,11 +142,13 @@ function createStand(data, editMode){
         newStand.iWinListener = google.maps.event.addListener(newStand.marker.iWin, 'domready', function(){
             var myStand = loadedStands[$(this.getContent()).attr('data-stand')];
             //set bookmark button text and behaviour
+/*
             $('button.bookmark').text(myStand.isBookmarked ? stringsL10N["Poista suosikeistasi"] : stringsL10N["Lisää suosikkeihin"]).off('click').click(function(){
                     var myStand = loadedStands[$(this).parent().attr("data-stand")];
                     myStand.bookmark(!myStand.isBookmarked);
                     return false;
                 });
+*/
         });
         
         google.maps.event.addListener(newStand.marker.iWin, 'closeclick', function(){ //unregister the window has being opened
@@ -481,7 +483,7 @@ function updateStands(data){
         var standInfo = '<div class="iWin" data-stand="'+data[i].id+'"><p>'+data[i].address+'</p><p>'+timeString+'</p>';
 
         standInfo += '<pre>'+data[i].description+'</pre>';
-        standInfo += '<button class="btn-red bookmark">'+stringsL10N["Lisää suosikkeihin"]+'</button>';
+        //standInfo += '<button class="btn-red bookmark">'+stringsL10N["Lisää suosikkeihin"]+'</button>';
         standInfo += '</div>';
         
         //update google map info window for the stand
