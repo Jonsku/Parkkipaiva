@@ -1,12 +1,5 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
-session_start();
-include($_SERVER['DOCUMENT_ROOT']."/db.php");
-
- 
-
-
+require_once("./inc/init.php");
 /* ############### */
 //print_r($_GET);
 if(!isset($_GET["query"]) || trim($_GET["query"]) == ""){
@@ -14,7 +7,7 @@ if(!isset($_GET["query"]) || trim($_GET["query"]) == ""){
 }
 
 include($_SERVER['DOCUMENT_ROOT']."/log.php");
-
+require_once("db.php");
 $query = trim($_GET["query"]);
 //handle query
 foreach($_POST as $key => $b){

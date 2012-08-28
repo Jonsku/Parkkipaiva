@@ -1,7 +1,6 @@
 <?php
     header("Content-type: application/x-javascript");
-    $_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-    $config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/site.ini", true);
+    require_once("../inc/init.php");
     if($config['stands']['archive']){
 ?>
     function getUserID(){

@@ -1,5 +1,5 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
+require_once("../inc/init.php");
     function saveCache($string){
         global $noCache; //if true, just return the plain string
         if(isset($noCache) && $noCache){
@@ -31,7 +31,7 @@ $_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
     
     $_SESSION['admin'] = 1;
     $page = "Staff Only!";
-    include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
+    include("../inc/header.php");
 ?>
 <style>
     li.ok{

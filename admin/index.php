@@ -1,7 +1,5 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-ini_set("session.save_path","../session/");
-session_start();
+require_once("../inc/init.php");
 $_SESSION['admin'] = 1;
 $page = "Staff Only!";
 include("../inc/header.php");

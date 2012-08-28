@@ -1,7 +1,4 @@
 <?php
-//$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-//parse config
-$config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/site.ini", true);
 date_default_timezone_set ( $config['server']['timezone'] );
 
 $floatfix = 0.0000000000001;

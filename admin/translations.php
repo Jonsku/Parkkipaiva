@@ -1,7 +1,5 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-ini_set("session.save_path","../session/");
-session_start();
+require_once("../inc/init.php");
 $_SESSION['admin'] = 1;
 $page = "Staff Only!";
 
@@ -104,6 +102,7 @@ try {
     $("textarea.translation").keyup(function(){
         //$.log("Text changed");
         $(this).parents("tr").find("button.save").removeAttr("disabled");
+		$(this).parents("tr").addClass("changed");
         return true;
     });
     
@@ -170,6 +169,7 @@ try {
                 $.log(statusText);
                 $.log(responseText);
                 $("#"+trId+" button.save").attr("disabled", "disabled");
+				$("#"+trId+" button.save").removeClass("changed");
                 return;
         }
       });

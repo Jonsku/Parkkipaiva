@@ -1,13 +1,4 @@
 <?php
-//parse config
-$config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/site.ini", true);
-
-
-//redirect
-if(preg_match("/^".$config['server']['server_name']."$/i", $_SERVER["SERVER_NAME"]) == 0){
-   header( 'Location: http://'.$config['server']['server_name'].$_SERVER["REQUEST_URI"] ) ;
-}
-
 //"Page title as it appears on the navigation bar" => "page file"
 $navigation = array("Etusivu"=>"", //points to index.php
                      "Myyntipaikat"=>"myyntipaikat.php");
@@ -55,13 +46,17 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
          //log/debug
          (function($) {
             $.each(['log','warn'], function(i,fn) {
+
                 $[fn] = function() {
+/*
                     if (!window.console) return;
                     var p = [], a = arguments;
                     for (var i=0; i<a.length; i++)
                         p.push(a[i]) && (i+1<a.length) && p.push(' ');
                     Function.prototype.bind.call(console[fn], console)
                         .apply(this, p);
+*/
+return true;
                 };
                 
                 $.fn[fn] = function() {
@@ -70,11 +65,15 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
                     $[fn].apply(this, p);
                     return this;
                 };
+			return true;
             });
             $.assert = function() {
+				/*
                 window.console
                     && Function.prototype.bind.call(console.assert, console)
                        .apply(console, arguments);
+*/
+			return true
             };
         })(jQuery);
          

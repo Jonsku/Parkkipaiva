@@ -1,17 +1,7 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = $_SERVER['DOCUMENT_ROOT']."/parkkipaiva/";
-ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
-session_start();
-//parse config
-$config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/site.ini", true);
+require_once("./inc/init.php");
 
-//redirect
-if(preg_match("/([^.].\.)?".$config['server']['server_name']."/i", $_SERVER["SERVER_NAME"]) == 0){
-   header( 'Location: '.$config['server']['server_name'].$_SERVER["REQUEST_URI"] ) ;
-   
-}
-
-include($_SERVER['DOCUMENT_ROOT']."/db.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/db.php");
 try {
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -30,19 +20,19 @@ try {
 <html lang="fi">
   <head>
     <meta charset="UTF-8">
-    <title>Siivouspäivä - Account activation</title>
+    <title>Parkkipäivä - <?php s('en_EN'); ?>Account activation<?php e(); ?></title>
   </head>
   <body>
 <?php
    if($result == 1){
 ?>
-   <p>Your account is now activated and you can start adding your stand to the map and also keep a list of your favorite stands.</p>
-   <p><a href="<?php echo $config['paths']['base_url'] ?>/myyntipaikat.php">Click to show the map</a></p>
+   <p><?php s('en_EN'); ?>Your account is now activated and you can start adding your stand to the map and also keep a list of your favorite stands.<?php e(); ?></p>
+   <p><a href="<?php echo $config['paths']['base_url'] ?>"><?php s('en_EN'); ?>Click to show the map<?php e(); ?></a></p>
 <?php
    }else{
 ?>
-   <p>Unfortunately your activation code is outdated. You can either request a new one to be sent to the same email address, OR, create a new one using the form on the map page.</p>
-   <p><a href="<?php echo $config['paths']['base_url'] ?>/">Request a new validation code</a> <a href="<?php echo $config['paths']['base_url'] ?>/myyntipaikat.php">Create a new account</a></p>
+   <p><?php s('en_EN'); ?>Unfortunately your activation code is outdated. You can either request a new one to be sent to the same email address, OR, create a new one using the form on the map page.<?php e(); ?></p>
+   <p><a href="<?php echo $config['paths']['base_url'] ?>/"><?php s('en_EN'); ?>Request a new validation code<?php e(); ?></a> <a href="<?php echo $config['paths']['base_url'] ?>"><?php s('en_EN'); ?>Create a new account<?php e(); ?></a></p>
 <?php
    }
 ?>
@@ -64,7 +54,9 @@ try {
    exit();
 }  
 
-include "header.php";
+include "./inc/header.php";
+$page = "Register";
+$navigation[$page] = "register/".$_GET['id'];
 $_SESSION['invitation'] = 1; 
 ?>
   </head>
@@ -74,24 +66,22 @@ $_SESSION['invitation'] = 1;
     <div id="fb-root"></div>
     
    <!-- header starts -->
-  <?php include("navbar.php"); ?>
   </head>
   <body>
     <!-- Init FB SDK -->
     <div id="fb-root"></div>
-    
+    <?php include($_SERVER['DOCUMENT_ROOT']."/inc/navbar.php"); ?>
     <div id="content">
       <div class="container">
         <div class="row" id="login_row">
           <div class="span12 inset">
             <!-- Login/out -->
-            <p><?php s(); ?>Once you have created an account using your email address you will be able to add recycling centers to the map.<?php e(); ?></p>
+            <p><?php s('en_EN'); ?>Once you have created an account using your email address you will be able to add recycling centers to the map.<?php e(); ?></p>
             <br/><br/>
             <button id="email-login-select" class="btn-red login-btn" style="display:none"><?php s('en_EN'); ?>Login with an email address<?php e(); ?></button>
             <?php include($_SERVER['DOCUMENT_ROOT']."/inc/login.php"); ?>
           </div>
         </div>
-       <?php include($_SERVER['DOCUMENT_ROOT']."/footer.php"); ?>
       </div>
     </div>
       <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.form.js"></script>

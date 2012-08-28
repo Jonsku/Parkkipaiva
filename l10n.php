@@ -18,7 +18,7 @@ if( isset($_GET['locale']) ){
 }
 
 //force to Finnish
-$_SESSION['locale'] = "fi_FI";
+//$_SESSION['locale'] = "fi_FI";
 /*
 echo "<!-- ".$_SESSION['locale']."-->";
 echo "<!-- ".getBrowserLocale()."-->";
