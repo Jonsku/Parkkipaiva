@@ -50,12 +50,222 @@ EventTarget.prototype = {
 };
 
 /* Stand Class */
+var StandTypes = new Array("single","double","special");
+
 function Stand(){
     EventTarget.call(this);
 }
 
+
+
 Stand.prototype = new EventTarget();
 Stand.prototype.constructor = Stand;
+Stand.prototype.x = "50%";
+Stand.prototype.y = "50%";
+Stand.prototype.id = 0;
+Stand.prototype.type = 0;
+Stand.prototype.start_hour = 14;
+Stand.prototype.end_hour = 19;
+Stand.prototype.edit = false;
+Stand.prototype.elem = undefined;
+
+Stand.prototype.appendToMap = function(){
+    $.log(this.type, StandTypes[this.type]);
+    this.elem = $('<div class="locationIcon '+StandTypes[this.type]+'" id="location_'+this.id+'"><img src="'+baseUrl+'/images/location_'+StandTypes[this.type]+'.png"><i>'+this.id+'</i></div>');
+    $("#map_canvas").append(this.elem);
+    this.elem.css('top', this.y).css('left', this.x).css('cursor','pointer');
+    var me = this;
+    this.elem.click(function(){
+        me.fire("clicked");
+    });
+}
+
+Stand.prototype.select = function(){
+    $(".locationIcon.selected").removeClass("selected");
+    this.elem.addClass("selected");
+}
+
+Stand.prototype.changeType = function(newType){
+    
+    if(this.elem != undefined){
+        this.elem.removeClass(StandTypes[this.type]);
+        this.type = newType;
+        this.elem.addClass(StandTypes[this.type]);
+        this.elem.find("img").attr("src",baseUrl+'/images/location_'+StandTypes[this.type]+'.png');
+    }else{
+        this.type = newType;
+    }
+    this.updateData();
+}
+
+Stand.prototype.changeHours = function(sH, eH){
+    this.start_hour = sH;
+    this.end_hour = eH;
+    this.updateData();
+}
+
+Stand.prototype.toggleEdit = function(){
+    if(this.edit){
+        //remove draggable
+        this.elem.draggable( 'disable' );
+        this.elem.css('cursor','pointer');
+    }else{
+        var me = this;
+        this.elem.draggable({
+            containment: "#map_canvas",
+            stop: function() {
+              me.updateLocation();
+            }
+          });
+          this.elem.css('cursor','move');
+    }
+    this.edit = !this.edit;
+}
+
+Stand.prototype.updateLocation = function(){
+        //convert to percent
+        var mapWidth = 100.0/ Number($("#map_canvas").width());
+        var mapHeight = 100.0/  Number($("#map_canvas").height());
+        var l = this.elem.css('left');
+        var t = this.elem.css('top');
+        this.x = Number(l.substring(0,l.length-2)) * mapWidth;
+        this.y = Number(t.substring(0,t.length-2)) * mapHeight;
+        $.ajax({
+            type: 'POST',
+            url: baseUrl+'/data.php?query=updatelocation',
+            data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour},
+            success: function(data, textStatus, jqXHR){
+                if(data.error){
+                    alert("Error:"+data.error);
+                }else{
+                    $.log("Position updated");
+                }
+            },
+            dataType: "json"
+        });
+}
+
+Stand.prototype.updateData = function(){
+    $.ajax({
+        type: 'POST',
+        url: baseUrl+'/data.php?query=updatelocation',
+        data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour},
+        success: function(data, textStatus, jqXHR){
+            if(data.error){
+                alert("Error:"+data.error);
+            }else{
+                $.log("Data updated");
+            }
+        },
+        dataType: "json"
+    });
+}
+
+Stand.prototype.destroy = function(){
+        $.ajax({
+            type: 'POST',
+            url: baseUrl+'/data.php?query=deletelocation',
+            data: {id : this.id},
+            success: function(data, textStatus, jqXHR){
+                if(data.error){
+                    alert("Error:"+data.error);
+                }else{
+                    $.log("Slot deleted");
+                    StandsList[data.success].fire("destroyed");
+                    StandsList[data.success].elem.remove();
+                    StandsList[data.success] = undefined;
+                }
+            },
+            dataType: "json"
+        });
+}
+
+var StandsList = new Object;
+
+
+
+function initializeMap(){
+    $.ajax({
+        type: 'POST',
+        url: baseUrl+'/data.php?query=loadlocations',
+        success: function(data, textStatus, jqXHR){
+            if(data.error){
+                alert("Error:"+data.error);
+            }else{
+                $.log("Fetched location:", data.success.length);
+                for(var i in data.success){
+                    var newStand = new Stand();
+                    newStand.id = data.success[i].id;
+                    newStand.x = data.success[i].x + "%";
+                    newStand.y = data.success[i].y + "%";
+                    newStand.type = data.success[i].type;
+                    newStand.start_hour = data.success[i].start_hour;
+                    newStand.end_hour = data.success[i].end_hour;
+                    newStand.appendToMap();
+                    StandsList[newStand.id] = newStand;
+                }
+                locationsLoaded();
+            }
+        },
+        dataType: "json"
+    });
+}
+/*
+        var elem = addLocation(true);
+        var newLoc = {
+          dom : elem,
+          id : elem.attr('id').split("_")[1]
+        }
+        return newLoc;
+      }
+      
+      function appendLocation(location){
+        var elem = addLocation(true, location.x, location.y, location.id);
+        var newLoc = {
+          dom : elem,
+          id : elem.attr('id').split("_")[1]
+        }
+        return newLoc;
+      }
+      
+      function addLocation(edit, l, t, n){
+        var num = n ? n : $("#map_canvas .locationIcon").length + 1;
+        var button = $('<div class="locationIcon" id="location_'+num+'"><img src="<?php echo $config['paths']['base_url']; ?>/img/location_icon.png"><i>'+num+'</i></div>');
+        $("#map_canvas").append(button);
+        if(!l){
+          l = '50%';
+        }
+        if(!t){
+          t = '50%';
+        }
+        button.css('top', t).css('left', l).css('cursor','pointer');
+        if(edit){
+          button.draggable({
+            containment: "#map_canvas",
+            stop: function() {
+              updateLocationPosition(num);
+            }
+          });
+          button.css('cursor','move');
+        }
+        return button;
+      }
+      
+      function updateLocationPosition(num){
+        //convert to percent
+        var mapWidth = 100.0/ Number($("#map_canvas").width());
+        var mapHeight = 100.0/  Number($("#map_canvas").height());
+        var l = $("#location_"+num).css('left');
+        var t = $("#location_"+num).css('top');
+        var percX = Number(l.substring(0,l.length-2)) * mapWidth;
+        var percY = Number(t.substring(0,t.length-2)) * mapHeight;
+        console.log(percX, percY);
+        $("#location_"+num).css('left',percX+'%');
+        $("#location_"+num).css('top',percY+'%');
+        return true;
+      }
+
+
 Stand.prototype.dontFilter = false;
 
 Stand.prototype.markAsUserStand = function(){
@@ -99,7 +309,7 @@ function createStand(data, editMode){
         google.maps.event.addListener(newStand.marker, 'dblclick', function(){
             focusOnStand(this);
         });
-        /*
+        
         newStand.addListener("bookmark",function(stand){
                 if(typeof bookmark == 'function') { 
                         bookmark(stand); 
@@ -110,7 +320,7 @@ function createStand(data, editMode){
                         unmark(stand); 
                 }
         });
-        */
+        
         newStand.addListener("filter",function(stand){
             stand.marker.setVisible(false); 
         });
@@ -142,13 +352,11 @@ function createStand(data, editMode){
         newStand.iWinListener = google.maps.event.addListener(newStand.marker.iWin, 'domready', function(){
             var myStand = loadedStands[$(this.getContent()).attr('data-stand')];
             //set bookmark button text and behaviour
-/*
             $('button.bookmark').text(myStand.isBookmarked ? stringsL10N["Poista suosikeistasi"] : stringsL10N["Lisää suosikkeihin"]).off('click').click(function(){
                     var myStand = loadedStands[$(this).parent().attr("data-stand")];
                     myStand.bookmark(!myStand.isBookmarked);
                     return false;
                 });
-*/
         });
         
         google.maps.event.addListener(newStand.marker.iWin, 'closeclick', function(){ //unregister the window has being opened
@@ -167,7 +375,7 @@ var cities = new Object; //list of cities
 var loadedStands = new Object; //list of loaded stands
 var openedWindow = undefined;
 
-/* Google Map Integration */
+
 var markerImgPath = baseUrl+"/img/";
 var mapSprites = new Object;
 var map = undefined;
@@ -245,19 +453,7 @@ function initializeMap() {
             //$.log("drag ended");
             loadStandsFromDb();
          });
-        /*
-        google.maps.event.addListener(map, 'zoom_changed', function() {
-                if(lastZoom < map.getZoom() && map.getZoom()>zoomBoundary){
-                        $.log("zoom changed");
-                        toggleStandsMarkers(true);
-                        loadStandsFromDb();
-                }else if(lastZoom > map.getZoom() && map.getZoom()<=zoomBoundary){
-                        toggleStandsMarkers(false);
-                }
-                lastZoom = map.getZoom();
-                
-        });
-        */
+        
         google.maps.event.addListener(map, 'center_changed', function() {
                 
         });
@@ -266,7 +462,7 @@ function initializeMap() {
 //hide/show stands/cities depending on the zoom level
 function toggleStandsMarkers(show){
     for(var i in loadedStands){
-        loadedStands[i].marker.setVisible( show /*&& isFiltered(loadedStands[i]) */);
+        loadedStands[i].marker.setVisible( show);
         isFiltered(loadedStands[i]);
     }
 }
@@ -329,7 +525,7 @@ function refreshStands(um, uM, vm, vM, t){
         dataType: "json"
     });
 }
-/* Custom markers */
+
 function setMarkers(map, location, marker_name) {
   
     var image = new google.maps.MarkerImage(markerImgPath+'map_sprites.png',
@@ -438,7 +634,7 @@ function getCityFromAddress(address){
     return -1;
 }
 
-/* CUSTOM FEATTURES */
+
 function getPostCode(stand){
         var rxPattern = /[0-9]{5}/;
         var postCode = stand.address.match(rxPattern);
@@ -452,10 +648,7 @@ function removeStand(id){
 
 
 
-/*
-Add loaded stands to the views or update existing stands data.
-Returns an array containing all the stands added/updated.
-*/
+
 function updateStands(data){
     //$.log("updateStands");
     var city = undefined;
@@ -483,7 +676,7 @@ function updateStands(data){
         var standInfo = '<div class="iWin" data-stand="'+data[i].id+'"><p>'+data[i].address+'</p><p>'+timeString+'</p>';
 
         standInfo += '<pre>'+data[i].description+'</pre>';
-        //standInfo += '<button class="btn-red bookmark">'+stringsL10N["Lisää suosikkeihin"]+'</button>';
+        standInfo += '<button class="btn-red bookmark">'+stringsL10N["Lisää suosikkeihin"]+'</button>';
         standInfo += '</div>';
         
         //update google map info window for the stand
@@ -507,7 +700,7 @@ function updateStands(data){
 
 
 
-/* PAN AND ZOOM */    
+ 
 function focusOnStand(marker){
     ////$.log("focusOn");
     panAndZoomTo(marker.getPosition());
@@ -526,14 +719,14 @@ function moveMapToAddress(geoLocation){
 }
 
 
-/* Geocoding search */
+
 $('#geocode-form input[type="submit"]').click(function(){
     geocode($('#geocode-form input[name="geocode-address"]').val(), moveMapToAddress);
     return false;
 });
 
 
-/* FILTERING */
+
 
 
 //filter by tags
@@ -676,3 +869,4 @@ $(".views.nav-tabs a").click(function(){
 $('body').data('filter.start_time', 0);
 $('body').data('filter.end_time',1440);
 applyFilter();
+ */

@@ -4,12 +4,14 @@ $_SESSION['admin'] = 1;
 $page = "Staff Only!";
 include("../inc/header.php");
 ?>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
     <link type="text/css" href="<?php echo $config['paths']['base_url']; ?>/css/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+    <link type="text/css" href="<?php echo $config['paths']['base_url']; ?>/css/map.css" rel="stylesheet" media="all" />
     <!-- Table sorter plugin -->
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.jscrollpane.min.js"></script>
-    <!-- Google Map API init -->
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=<?php echo $config['googlemap']['api_key']; ?>&sensor=true"></script>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
   </head>
 
   <body>
@@ -20,31 +22,16 @@ include("../inc/header.php");
     <!-- content starts -->
     <div class="container">
         <?php include("../inc/map.php"); ?>
-        <!-- Stands -->
-        <div class="row">
-            <h2>Manage stands</h2>
-            <hr>
-            <div class="span12 inset">
-                <table id="stands-table" class="table-striped">
-                    <thead>
-                        <tr>
-                          <th></th>
-                          <th>Owner Info</th>
-                          <th>Address</th>
-                          <th>Opening hours</th>
-                          <th>Description</th>
-                          <th>Slots occupied</th>
-                          <th>Created/Modified</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-                <button class="btn" id="delete-stands">Delete selected</button>
-            </div>
+        <div id="map_action">
+          <button class="add">Add slot</button>
+          <select id="slot_type"></select>
+          <button class="remove">Remove last slot</button>
+          Available from <select name="sh" id="sh" class="hour" data-default="14"></select> to <select name="eh" id="eh" class="hour" data-default="19"></select>
         </div>
+        
+        
     </div>
+    
     <!-- Script -->
     <script type="text/javascript">
       /* Localized Strings */
@@ -53,76 +40,103 @@ include("../inc/header.php");
     </script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/standmap.js"></script>
     <script type="text/javascript">
-        function updateStandsList(data){
-            $.log("updateStandsList", data);
-            for(var i in data){
-                //format date
-                var date = new Date(Number(data[i].modified)*1000);
-                var ownerInfo = data[i].owner_name;
-                if(data[i].phone != "")
-                  ownerInfo +=  "<br/>Phone: " + data[i].phone;
-                if(data[i].email != "")
-                  ownerInfo +=  "<br/>Email: " + data[i].email;
-                
-                //id, name, address, start_hour, start_minute, end_hour, end_minute, description, tags, link, u, v, modified
-                $('#stands-table tbody').append('<tr id="'+data[i].id+'"><td><input type="checkbox"/></td><td>'+ownerInfo+'</td><td>'+data[i].address+'<input name="u" type="hidden" val="'+data[i].u+'"/><input name="v" type="hidden" val="'+data[i].v+'"/></td><td>'+pad(data[i].start_hour,2)+':'+pad(data[i].start_minute,2)+' - '+pad(data[i].end_hour,2)+':'+pad(data[i].end_minute,2)+'</td><td>'+data[i].description+'</td><td>'+data[i].slots+'</td><td>'+date.toLocaleString()+'</td></tr>');
-            }
-        }
-        
-        //load Map API
-        initializeMap();
-        
-        //load all stands
-        var data= {um:"-90",uM:"90",vm:"-180",vM:"180"};
-        $.log(data);
-        $.ajax({
-            type: 'POST',
-            url: '<?php echo $config['paths']['base_url']; ?>/data.php?query=adminLoad',
-            data: data,
-             error: function(jqXHR, textStatus, errorThrown){
-                $.log("There was an error.");
-                $.log(jqXHR);
-                $.log(textStatus);
-                return;
-            },
-            success: function(data, textStatus, jqXHR){ //$.log("Ajax post result: "+textStatus); //$.log(data);
-                if(data.error){
-                    alert("Error:"+data.error);
-                }else{
-                    updateStandsList(data);
-                }
-            },
-            dataType: "json"
+      var currentSlot = undefined;
+     initializeMap();
+     createHoursMinutesSelect();
+      $("#sh option").last().remove();
+      $("#eh option").first().remove();
+      
+      $("#sh").change(function(){
+          $.log("Start hour changed");
+          var startHour = $(this).val();
+          var endHour = $("#eh").val();
+          if(startHour >= endHour){
+              $("#eh").val(Number(startHour)+1).change();
+          }
+          hoursChanged();
+      });
+      
+      $("#eh").change(function(){
+          $.log("End hour changed");
+          var startHour = $("#sh").val();
+          var endHour = $(this).val();
+          if(endHour <= startHour){
+              $("#sh").val(Number(endHour)-1).change();
+          }
+          hoursChanged();
+      })
+      
+     for(var i in StandTypes){
+      $("#slot_type").append('<option value="'+i+'">'+StandTypes[i]+'</option>'); 
+     }
+     
+     $("#slot_type").change(function(){
+      if(currentSlot != undefined){
+        currentSlot.changeType($(this).val());
+      }
+     });
+     
+     function hoursChanged(){
+      if(currentSlot === undefined){
+        return;
+      }
+      currentSlot.changeHours( $("#sh").val(), $("#eh").val() );
+     }
+     
+     function locationsLoaded(){
+      $.log("Locations loaded");
+      for(var i in StandsList){
+        StandsList[i].toggleEdit();
+        StandsList[i].addListener("clicked", function(stand){
+          currentSlot = stand;
+          $("#slot_type").val(currentSlot.type);
+          $("#sh").val(stand.start_hour);
+          $("#eh").val(stand.end_hour);
+          currentSlot.select();
+          $.log("Stand "+stand.id+" clicked");
         });
         
-        //delete stands button
-        $('#delete-stands').click(function(){
-            var selected = $('#stands-table input[type="checkbox"]:checked');
-            if(selected.length<1){
-                alert("No stand selected for deletion!");
-                return false;
-            }
-            var del = confirm("Are you sure you want to delete "+selected.length+" stand"+(selected.length>1 ? "s?":"?"));
-            if(del === true){
-              selected.each(function(){
-                $.ajax({
-                    type: 'POST',
-                    data: {i: urlencode($(this).parents('tr').attr('id'))},
-                    url: '<?php echo $config['paths']['base_url']; ?>/data.php?query=delete',
-                    success: function(data, textStatus, jqXHR){ $.log("Ajax post result: "+textStatus); //$.log(data);
-                        if(data.error){
-                            alert("Error:"+data.error);
-                        }else{
-                            $('#'+data.success).remove();
-                        }
-                    },
-                    dataType: "json"
-                });
-              });
-            }
+        StandsList[i].addListener("destroyed",function(stand){
+          if(stand === currentSlot){
+            currentSlot = undefined;
+          }
         });
-        
-        createHoursMinutesSelect();
+      }
+     }
+     
+      $("#map_action .add").click(function(){
+          var newStand = new Stand();
+          newStand.id = $("#map_canvas .locationIcon").length + 1;
+          $("#slot_type").val(0);
+          $("#sh").val(14);
+          $("#eh").val(19);
+          newStand.type = $("#slot_type").val();
+          newStand.start_hour = $("#sh").val();
+          newStand.end_hour = $("#eh").val();
+          newStand.appendToMap();
+          newStand.toggleEdit();
+          newStand.addListener("clicked", function(stand){
+            currentSlot = stand;
+            $("#slot_type").val(currentSlot.type);
+            $("#sh").val(stand.start_hour);
+            $("#eh").val(stand.end_hour);
+            currentSlot.select();
+            $.log("Stand "+stand.id+" clicked");
+          });
+          newStand.addListener("destroyed",function(stand){
+            if(stand === currentSlot){
+              currentSlot = undefined;
+            }
+          });
+          newStand.updateLocation();
+          StandsList[newStand.id] = newStand;
+          currentSlot = newStand;
+          currentSlot.select();
+      });
+      
+      $("#map_action .remove").click(function(){
+        StandsList[$("#map_canvas .locationIcon").length].destroy();
+      });
     </script>
     <!-- Plugin -->
     <script src="<?php echo $config['paths']['base_url']; ?>/bootstrap/js/bootstrap-collapse.js"></script>

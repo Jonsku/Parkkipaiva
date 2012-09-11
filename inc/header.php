@@ -1,7 +1,7 @@
 <?php
 //"Page title as it appears on the navigation bar" => "page file"
 $navigation = array("Etusivu"=>"", //points to index.php
-                     "Myyntipaikat"=>"myyntipaikat.php");
+                     "Parkkipaikat"=>"parkkipaikat.php");
 
 //string localization
 require_once($_SERVER['DOCUMENT_ROOT']."/l10n.php");
@@ -9,12 +9,12 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
    echo "<!-- cached copy -->";
    exit(0);
 }
-?>
+?> 
 <!DOCTYPE html>
 <html lang="<?php echo getLangageCode(); ?>">
   <head>
     <meta charset="UTF-8">
-    <title>Parkkipäivä - <?php echo $page ?></title>
+    <title>Parkkipäivä</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="http://siivouspaiva.com/img/side_illustration.png"/>
     <meta property="og:type" content="cause" />
@@ -23,9 +23,7 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="<?php echo $config['paths']['base_url']; ?>/bootstrap/css/bootstrap.css" rel="stylesheet">    
-    <link href="<?php echo $config['paths']['base_url']; ?>/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="<?php echo $config['paths']['base_url']; ?>/css/siivouspaiva.css" rel="stylesheet">
+    <link href="<?php echo $config['paths']['base_url']; ?>/css/main.css" rel="stylesheet" type="text/css">
         
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -34,13 +32,17 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="<?php echo $config['paths']['base_url']; ?>/img/text_logo_60_60.jpg">
+    <!--
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $config['paths']['base_url']; ?>/bootstrap/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $config['paths']['base_url']; ?>/bootstrap/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="<?php echo $config['paths']['base_url']; ?>/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+    -->
     
     <script type="text/javascript" src="<?php echo $config['paths']['jquery']; ?>"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.validate.min.js"></script>
+    <!--
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/bootstrap-dropdown.js"></script>
+    -->
     <script type="text/javascript">
          var baseUrl = "<?php echo $config['paths']['base_url']; ?>";
          //log/debug
@@ -48,14 +50,14 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
             $.each(['log','warn'], function(i,fn) {
 
                 $[fn] = function() {
-/*
+/* */
                     if (!window.console) return;
                     var p = [], a = arguments;
                     for (var i=0; i<a.length; i++)
                         p.push(a[i]) && (i+1<a.length) && p.push(' ');
                     Function.prototype.bind.call(console[fn], console)
                         .apply(this, p);
-*/
+/* */
 return true;
                 };
                 
@@ -68,11 +70,11 @@ return true;
 			return true;
             });
             $.assert = function() {
-				/*
+				/**/
                 window.console
                     && Function.prototype.bind.call(console.assert, console)
                        .apply(console, arguments);
-*/
+/**/
 			return true
             };
         })(jQuery);
@@ -96,12 +98,12 @@ return true;
                 //var d = (this.dataset.default) ? this.dataset.default : 12;
                 var d = this.getAttribute('data-default') ? this.getAttribute('data-default') : 12;
                 d = pad(d,2);
-                for(var h=0;h<24; h++){
+                for(var h=14;h<20; h++){
                     h = pad(h,2);
                     if(h==d){
-                        $(this).append('<option value="'+h+'" selected>'+h+'</option>');
+                        $(this).append('<option value="'+h+'" selected>'+h+':00</option>');
                     }else{
-                        $(this).append('<option value="'+h+'">'+h+'</option>');
+                        $(this).append('<option value="'+h+'">'+h+':00</option>');
                     }
                 }
             });

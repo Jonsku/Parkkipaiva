@@ -1,0 +1,71 @@
+#map_canvas{
+  background:url(../images/kartta.jpg) no-repeat;
+  position:relative;
+}
+
+.locationIcon {
+  display:block;
+  position:absolute;
+  text-align:center;
+  font-size:1.5em;
+  font-weight:bold;
+  color:white;
+  height:33px;
+  padding-top:5px;
+}
+
+.locationIcon img{
+  width:100%;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:0;
+}
+
+.locationIcon i{
+  display:block;
+  position:relative;
+  font-style:normal;
+  z-index:1;
+}
+
+.locationIcon.single, .locationIcon.special{
+ width:38px; 
+}
+
+.locationIcon.single i, .locationIcon.special i{
+  margin-left:-6px;
+}
+
+.locationIcon.double{
+ width:51px; 
+}
+
+.locationIcon.double i{
+  margin-left:-6px;
+}
+
+.locationIcon.selected i{
+  color:#08416E;
+}
+
+.locationIcon.selected.special i{
+  color:#2EB900;
+}
+/*
+.locationIcon:hover, .locationIcon.highlight {
+ background:url(../image/location_icon_hover.png) no-repeat; 
+}
+*/
+
+.location_select .location{
+/*  background:#FFFF00;
+  padding:5px;
+  margin-left:10px;
+*/
+  cursor:pointer;
+}
+
+.location_select .location.selected{
+  background:#FF0000;
+}

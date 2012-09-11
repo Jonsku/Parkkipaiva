@@ -717,3 +717,7 @@ display:none !important;
 #stands-table td + td + td + td + td + td + td{
   text-align:left;
 }
+
+#event-editing{
+  display:none;
+}

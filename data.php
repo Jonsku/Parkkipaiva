@@ -1,5 +1,11 @@
 <?php
-require_once("./inc/init.php");
+ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
+session_start();
+include($_SERVER['DOCUMENT_ROOT']."/db.php");
+
+ 
+
+
 /* ############### */
 //print_r($_GET);
 if(!isset($_GET["query"]) || trim($_GET["query"]) == ""){
@@ -7,7 +13,7 @@ if(!isset($_GET["query"]) || trim($_GET["query"]) == ""){
 }
 
 include($_SERVER['DOCUMENT_ROOT']."/log.php");
-require_once("db.php");
+
 $query = trim($_GET["query"]);
 //handle query
 foreach($_POST as $key => $b){
@@ -26,6 +32,8 @@ switch($query){
     case "revoke":
     case "add_news":
     case "delete_news":
+    case "updatelocation":
+    case "deletelocation":
     if(!isAdmin()){
             echo json_encode(array("error"=>"no pasaran"));
             exit();
@@ -56,7 +64,7 @@ switch($query){
 switch($query) {
     /* STANDS */
      case "getAll":
-        getAllStands();
+        getAllEvents();
         break;
     case "get":
         get();
@@ -75,6 +83,18 @@ switch($query) {
         break;
     case "delete":
         delete();
+        break;
+    case "updatelocation":
+        updateLocation();
+        break;
+    case "loadlocations":
+        loadLocations();
+        break;
+    case "deletelocation":
+        deleteLocation();
+        break;
+    case "freelocations":
+        freeLocations();
         break;
     /* SPECIALS */
     case "mail":

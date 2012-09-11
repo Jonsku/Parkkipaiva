@@ -1,0 +1,229 @@
+@charset "utf-8";
+body {
+	background-attachment: fixed;
+	background-image: url(../images/bg.jpg);
+	background-repeat: no-repeat;
+	background-position: top;
+	background-color: #557EAC;
+	font-family: Helvetica, Arial,  sans-serif;
+	color: #818181;
+	height: 100%;
+	background-size: cover;
+	-moz-background-size: cover;
+	-webkit-background-size: cover;
+}
+@media only all and (max-width: 640px) and (max-height: 480px) {
+body {
+background-size: 640px 480px;
+-moz-background-size: 640px 480px;
+-webkit-background-size: 640px 480px;
+}
+}
+@media only screen and (orientation: portrait) and (device-width: 320px), (device-width: 768px) {	
+body {
+-webkit-background-size: auto 100%;
+}
+}
+@media only screen and (orientation: landscape) and (device-width: 320px), (device-width: 768px) {
+body {
+-webkit-background-size: 100% auto;
+}
+}
+
+
+#wrapper {
+	position: relative;
+	margin-right: auto;
+	margin-left: auto;
+	width: 970px;
+	margin-top: 30px;
+}
+
+#header {
+	background-image: url(../images/top_bg.png);
+	background-repeat: no-repeat;
+	background-position: center top;
+	width: 870px;
+	padding-top: 40px;
+	padding-left: 50px;
+	padding-right: 50px;
+	height: 264px;
+	position: relative;
+}
+.logo {
+	margin-top: 15px;
+}
+
+
+#content {
+	width: 870px;
+	background-image: url(../images/mid_bg.png);
+	background-repeat: repeat-y;
+	background-position: center;
+	padding-right: 50px;
+	padding-left: 50px;
+	clear: both;
+	overflow: auto;
+}
+.col1 {
+	float: left;
+	width: 192px;
+}
+.col2 {
+	width: 645px;
+	padding-left: 32px;
+	float: left;
+}
+#footer {
+	background-image: url(../images/bottom_bg.png);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	width: 870px;
+	height: 110px;
+	padding-right: 50px;
+	padding-left: 50px;
+	padding-top: 15px;
+	clear: both;
+	display: block;
+	float: left;
+	overflow: hidden;
+	position: static;
+}
+strong {
+	font-weight: bold;
+	color: #9EC831;
+}
+p {
+	font-family: georgia;
+	font-size: 14px;
+	line-height: 20px;
+	color: #7D7D7D;
+}
+p.info {
+	font-size: 14px;
+	font-style: italic;
+	line-height: 20px;
+	font-variant: normal;
+	color: #88a33f;
+	margin-bottom: 35px;	
+}
+h1 {
+	font-size: 26px;
+	line-height: 30px;
+	margin-top: 0px;
+}
+
+.col1 ul {
+	margin-left: 0px;
+	padding-left: 0px;
+	border-top-width: 15px;
+	border-top-style: solid;
+	border-top-color: #B2B2B2;
+	border-bottom-color: #B2B2B2;
+	padding-top: 15px;
+	padding-bottom: 0px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	display: block;
+	top: -30px;
+	position: relative;
+	margin-bottom: 0px;
+}
+
+.col1 ul li {
+	list-style-type: none;
+	margin-left: 0px;
+	padding-left: 0px;
+	font-size: 18px;
+	text-transform: uppercase;
+	padding-bottom: 10px;
+}
+.col1 ul li a{
+	font-size: 18px;
+	color: #807474;
+	text-decoration: none;
+	font-weight: bold;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+
+}
+
+.col1 ul li a:hover, .col1 ul li a.active {
+	color: #98BD34;
+}
+.fb-like-box {
+	margin-bottom: 30px;
+}
+.header td {
+	background-color: #E8D53E;
+	height: 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #333;
+	text-align: center;
+	padding: 5px;
+}
+tr {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333;
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+}
+td {
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-color: #EAEAEA;
+	border-right-color: #EAEAEA;
+	border-bottom-color: #EAEAEA;
+	border-left-color: #EAEAEA;
+	padding: 2px;
+}
+table {
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #E8D53E;
+	border-right-color: #E8D53E;
+	border-bottom-color: #E8D53E;
+	border-left-color: #E8D53E;
+}
+
+.dot {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFF;
+	background-image: url(../images/dot_bg.gif);
+	display: block;
+	background-repeat: no-repeat;
+	float: left;
+	height: 15px;
+	width: 15px;
+	text-align: center;
+	margin-right: 3px;
+	margin-left: 3px;
+	line-height: 16px;
+}
+
+#event-editing{
+  display:none;
+}
+
+/* login/register form */
+
+
+#logout-btn, #register-email .permission_info, #register-email, #login-email-dont-exist, #login-email-exist,#email-login-form, #email-login-form .register_info,.fb-register-notice,#fb-save-account-btn, #fb-login{
+  display:none;
+}

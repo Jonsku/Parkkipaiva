@@ -1,4 +1,7 @@
 <?php
+
+//parse config
+$config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/site.ini", true);
 date_default_timezone_set ( $config['server']['timezone'] );
 
 $floatfix = 0.0000000000001;
@@ -122,6 +125,92 @@ function db_getStandIdOfOwner($db, $user_id){
     return $row['id'];
 }
 
+function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh ){
+    $sql = 'SELECT count(*) FROM locations WHERE id = ?';
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array($id));
+    if($stmt->fetchColumn() == 0){
+        $sql = "INSERT INTO locations (id, x, y, type, start_hour, end_hour) VALUES (:id, :x, :y, :type, :start, :end);";
+    }else{
+        $sql = "UPDATE locations SET x = :x, y = :y, type = :type, start_hour = :start, end_hour = :end WHERE id = :id;";
+    }
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':x',$x);
+    $stmt->bindParam(':y',$y);
+    $stmt->bindParam(':type',$type);
+    $stmt->bindParam(':start',$sh);
+    $stmt->bindParam(':end',$eh);
+    $stmt->execute();
+    return true;
+}
+
+function db_deleteLocation($db, $id){
+    $sql = "DELETE FROM locations WHERE id = ?;";
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array($id));
+    return true;
+}
+
+function db_getLocations($db){
+     $sql = 'SELECT locations.id id, locations.x x, locations.y y, locations.type type, locations.start_hour start_hour, locations.end_hour end_hour FROM locations;';
+    $stmt = $db->prepare($sql);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+    $locations = array();
+    while($row = $stmt->fetch()){
+        $locations[] = $row;
+    }
+    return $locations;
+}
+
+function db_getFreeLocationsForTime($db, $start, $end, $user_id){
+    $sql = "SELECT locations.id id FROM locations WHERE id NOT IN (SELECT events.location FROM events WHERE (( start_hour BETWEEN :start AND :end ) OR ( end_hour BETWEEN :start AND :end )) AND id != :uid ) AND ((start_hour BETWEEN :start AND :end) OR (end_hour BETWEEN :start AND :end)) ORDER BY id;";
+    $stmt = $db->prepare($sql);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->bindParam(':start', $start);
+    $stmt->bindParam(':end',$end);
+    $stmt->bindParam(':uid',$user_id);
+    $stmt->execute();
+    $locations = array();
+    while($row = $stmt->fetch()){
+        $locations[] = $row['id'];
+    }
+    return $locations;
+}
+
+function db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description){
+    $sql = "UPDATE events SET location = :location, start_hour = :st, end_hour = :et, description = :description WHERE id = :uid;";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':location', $location);
+    $stmt->bindParam(':st',$sT);
+    $stmt->bindParam(':et',$eT);
+    $stmt->bindParam(':description',$description);
+    $stmt->bindParam(':uid',$user_id);
+    $stmt->execute();
+    return true;
+}
+
+function db_getEvent($db, $user_id){
+    $sql = "SELECT events.location location, events.start_hour sh, events.end_hour eh, events.description description FROM events WHERE id = :uid;";
+    $stmt = $db->prepare($sql);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->bindParam(':uid', $user_id);
+    $stmt->execute();
+    return $stmt->fetch();
+}
+
+
+function db_getAllEvents($db){
+    $sql = "SELECT events.location location, events.start_hour sh, events.end_hour eh, events.description description FROM events ORDER BY start_hour;";
+    $stmt = $db->prepare($sql);
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $stmt->execute();
+    $stands = array();
+    while($row = $stmt->fetch()){ $stands[] = $row; }
+    return $stands;
+}
+
 
 function db_createUpdateStand($db, $user_id, $address, $u, $v, $sT, $eT, $description, $slots){
     $id = $createRecycle === FALSE ? db_getStandIdOfOwner($db, $user_id) : 0;
@@ -180,7 +269,7 @@ function db_checkUser($db, $email, $fb_id = "", $password = ""){
     if($password === "" && $fb_id === ""){
         $password = "0";
     }
-    $sql = 'SELECT id, password, status FROM owners WHERE (fb_id = "" AND email_id = ?) OR (fb_id != "" AND fb_id = ?);';
+    $sql = 'SELECT id, password, status FROM events WHERE (fb_id = "" AND email_id = ?) OR (fb_id != "" AND fb_id = ?);';
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute(array($email, $fb_id));
@@ -207,7 +296,7 @@ function db_checkUser($db, $email, $fb_id = "", $password = ""){
 
 function db_createUser($db, $email, $fb_id, $password, $name, $phone){
     $timestamp = strftime('%s');
-    $sql = "INSERT INTO owners (id, email_id, fb_id, password, name, phone, status, timestamp) VALUES (NULL, :email, :fb_id, :password, :name, :phone, 0, :timestamp);";
+    $sql = "INSERT INTO events (id, email_id, fb_id, password, name, phone, status, timestamp) VALUES (NULL, :email, :fb_id, :password, :name, :phone, 0, :timestamp);";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':fb_id', $fb_id);
@@ -224,7 +313,7 @@ function db_validateAccount($db, $code){
     //extract id
     list($seed,$secret) = split("_", $code, 2);
     $id = intval($secret) ^ ( ( intval($seed) << 2 ) ^ ( intval($seed) >> 2 ) );
-    $sql = "SELECT COUNT(*) as count FROM owners WHERE id = :id AND timestamp = :timestamp;";
+    $sql = "SELECT COUNT(*) as count FROM events WHERE id = :id AND timestamp = :timestamp;";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':timestamp', $seed);
@@ -239,7 +328,7 @@ function db_validateAccount($db, $code){
         return 0;
     }
     //activate account
-    $sql = "UPDATE owners SET status = 1, timestamp = :timestamp WHERE id = :id;";
+    $sql = "UPDATE events SET status = 1, timestamp = :timestamp WHERE id = :id;";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':timestamp', $now);
     $stmt->bindParam(':id', $id);
@@ -250,14 +339,14 @@ function db_validateAccount($db, $code){
 }
 
 function db_changePassword($db, $id, $password){
-    $sql = "UPDATE owners SET password = ? WHERE id = ?;";
+    $sql = "UPDATE events SET password = ? WHERE id = ?;";
     $stmt = $db->prepare($sql);
     $stmt->execute(array($password, $id));
     return;
 }
 
 function db_userExists($db, $uid){
-    $sql = "SELECT COUNT(*) as count FROM owners WHERE id = ?;";
+    $sql = "SELECT COUNT(*) as count FROM events WHERE id = ?;";
     $stmt = $db->prepare($sql);
     $stmt->execute(array($uid));
     return ($stmt->fetchColumn() == 1);
@@ -303,6 +392,139 @@ function checkRequired($params){
 /* ############### */
 
 /* STANDS */
+//Update the loation of a stand on the map
+function updateLocation(){
+    /*
+    if(isset($_GET["debug"])){
+        replacePost('{"i":"679632245"}');
+    }
+    */
+    
+    if(function_exists('customLog'))
+        customLog("./logs/locationChangeLog.txt", json_encode($_POST));
+
+    /* Validate */
+    $validate = checkRequired(array("id" => true, "x" => true, "y" => true, "type" => true, "start" => true, "end" => true ));
+    if($validate != 1){
+        echo json_encode(array("error"=>$validate));
+        return;
+    }
+    
+    $id = trim($_POST["id"]);
+    $x = trim($_POST["x"]);
+    $y = trim($_POST["y"]);
+    $type = trim($_POST["type"]);
+    $sh = trim($_POST["start"]);
+    $eh = trim($_POST["end"]);
+    
+    try {
+        //connect to db
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        if(db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh)){
+            echo json_encode(array("success" => $id));
+        }else{
+            echo json_encode(array("error" => "Unable to modify location."));
+        }
+        $db = NULL;
+        return;
+    }catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function deleteLocation(){
+    $validate = checkRequired(array("id" => true));
+    if($validate != 1){
+        echo json_encode(array("error"=>$validate));
+        return;
+    }
+    
+    $id = trim($_POST["id"]);
+    
+    try {
+        //connect to db
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        if(db_deleteLocation($db, $id)){
+            echo json_encode(array("success" => $id));
+        }else{
+            echo json_encode(array("error" => "Unable to modify location."));
+        }
+        $db = NULL;
+        return;
+    }catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+
+}
+
+
+function loadLocations(){
+    try {
+        //connect to db
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        echo json_encode( array("success" => db_getLocations($db) ) );
+        $db = NULL;
+        return;
+    }catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function freeLocations(){
+    /*
+    if(isset($_GET["debug"])){
+        replacePost('{"i":"679632245"}');
+    }
+    */
+
+    /* Validate */
+    $validate = checkRequired(array("start" => true, "end" => true));
+    if($validate != 1){
+        echo json_encode(array("error"=>$validate));
+        return;
+    }
+    
+    $start = trim($_POST["start"]);
+    $end = trim($_POST["end"]);
+    $user_id = trim($_SESSION['uid']);
+    try {
+        //connect to db
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        echo json_encode( array("success" => db_getFreeLocationsForTime($db, $start, $end, $user_id) ) );
+        $db = NULL;
+        return;
+    }catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function getAllEvents(){
+     try {
+        //connect to db
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        echo json_encode(db_getAllEvents($db));
+        $db = NULL;
+        return;
+     }catch(PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+     }
+}
+
 //get all stands with cities
 function getAllStands(){
      try {
@@ -337,8 +559,11 @@ function get(){
         //connect to db
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-            $stands = db_getStands($db, $user_id);
-            echo json_encode(array("stands" => $stands));
+            $event = db_getEvent($db, $user_id);
+            if($event['location'] == 0){
+                $event['location'] = "";
+            }
+            echo json_encode(array("event" => $event));
             $db = NULL;
             return;
     }catch (PDOException $e) {
@@ -406,44 +631,28 @@ function add(){
     if(function_exists('customLog'))
         customLog("./logs/standsLog.txt", "add|".json_encode($_POST));
     /* Validate */
-    $validate = checkRequired(array("address" => true, "city" => true, "u" => true, "v" => true, "desc" => true, "st" => true, "et" => true, "slots" => true));
+    $validate = checkRequired(array("location" => true, "st" => true, "et" => true, "desc" => true));
     if($validate != 1){
         echo json_encode(array("error"=>$validate));
         return;
     }
     
     $user_id = trim($_SESSION['uid']);
-    $address = trim($_POST["address"]);
-    $city = trim($_POST["city"]);
-    $city = strcasecmp($city,"helsingfors") == 0 ? "Helsinki" : $city;
-    $u = trim($_POST["u"]);
-    $v = trim($_POST["v"]);
+    $location = trim($_POST["location"]);
     $description = trim($_POST["desc"]);
-    $slots = trim($_POST["slots"]);
-    $sT = explode(":",$_POST["st"]);
-    $eT = explode(":",$_POST["et"]);
-    if(function_exists('customLog'))
-        customLog("./logs/debugLog.txt", $_POST["st"].", ".$_POST["et"]." => ".$sT[0].", ".$sT[1]." / ".$eT[0].", ".$eT[1]."\n");
+    $sT = intval($_POST["st"]);
+    $eT = intval($_POST["et"]);
+    
     //connect to db
     try {
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        $id = db_createUpdateStand($db, $user_id, $address, $u, $v, $sT, $eT, $description, $slots);
+        if(db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description)){
+            echo json_encode(array("success" => "ok"));
+        }else{
+            echo json_encode(array("error" => "unknown"));
+        }
         
-        $return = array("id" => $id,
-        "address" => $address,
-        "u" => $u,
-        "v" => $v,
-        "city" => $city,
-        "start_hour" => $sT[0],
-        "start_minute" => $sT[1],
-        "end_hour" => $eT[0],
-        "end_minute" => $eT[1],
-        "description" => $description,
-        "slots" => $slots
-        );
-        if(function_exists('customLog'))         customLog("./logs/debugLog.txt", json_encode(array($return))."\n");
-        echo json_encode(array($return));
         $db = NULL;
         return;
     } catch (PDOException $e) {

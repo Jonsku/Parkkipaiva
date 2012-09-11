@@ -1,4 +1,0 @@
-AuthUserFile /var/www/siivouspaivacom/.htpasswd
-AuthType Basic
-AuthName "Parkki Païvä - Staff Only"
-Require valid-user
