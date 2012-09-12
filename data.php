@@ -1,6 +1,5 @@
 <?php
-ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
-session_start();
+include("./inc/init.php");
 include($_SERVER['DOCUMENT_ROOT']."/db.php");
 
  
