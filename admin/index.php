@@ -20,7 +20,7 @@ include("../inc/header.php");
     <!-- navbar ends -->
     
     <!-- content starts -->
-    <div class="container" style="background:#D4F8F3">
+    <div class="container" style="background:#D4F8F3;padding:50px;">
         <?php include("../inc/map.php"); ?>
         <div id="map_action">
           <button class="add">Add slot</button>
@@ -28,7 +28,9 @@ include("../inc/header.php");
           <button class="remove">Remove last slot</button>
           Available from <select name="sh" id="sh" class="hour" data-default="14"></select> to <select name="eh" id="eh" class="hour" data-default="19"></select>
         </div>
-        
+        <br><hr><br>
+        <p>Here you can create and edit events:</p>
+        <button id="create-event">Create a new event</button>
         <div id="event-editing">
           <form id="event-form" class="form-vertical" method="post" action="#">
             <input type="hidden" name="eventId" id="eventId" value="0"/> 
@@ -60,7 +62,16 @@ include("../inc/header.php");
               
           </form>
       </div>
-        
+        <br><hr><br>
+        <p>Click on an event to edit it in the form:</p>
+      <table id="events-calendar" width="634" border="0" cellspacing="0" cellpadding="0" >
+        <tr class="header">
+          <?php for($i = $config['start_time'];$i < $config['end_time'];$i++){ ?>
+          <td bgcolor="#e8d53e"><?php echo $i; ?>:00 - <?php echo $i+1; ?>:00</td>
+          <?php } ?>
+        </tr>
+      </table>
+      <br><br>
     </div>
     
     <!-- Script -->
@@ -73,14 +84,34 @@ include("../inc/header.php");
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.form.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/form.util.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/standmap.js"></script>
+    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/events.js"></script>
     <script type="text/javascript">
-      var currentSlot = undefined;
+    var userEvent = undefined;
+    //init the events timetable
+    var calendar = new EventCalendar();
+    calendar.setTimesAndView(<?php echo $config['start_time']; ?>, <?php echo $config['end_time']; ?>, $("#events-calendar"));
+    calendar.loadEvents();
+    //load the event in the form when clicking on the timetable
+    calendar.clickCellCallback(function(ev){
+      $.log("Callback called", ev);
+      $('#event-form input[name="location"]').val(ev.location);
+      $('#event-form select[name="starth"]').val(ev.start_hour);
+      $('#event-form select[name="endh"]').val(ev.end_hour);
+      $('#event-form textarea').val(ev.description);
+      $('#event-form input[name="eventId"]').val(ev.id);
+      updateLocationsSelect();
+      $('#event-form textarea').keyup();
+      userEvent = ev;
+    });
+    
+     var currentSlot = undefined;
      initializeMap();
      createHoursMinutesSelect();
       $("#sh option, #starth option").last().remove();
       $("#eh option, #endh option").first().remove();
       updateLocationsSelect();
       $("#event-editing").show();
+      
       
       $("#sh").change(function(){
           $.log("Start hour changed");
@@ -90,6 +121,7 @@ include("../inc/header.php");
               $("#eh").val(Number(startHour)+1).change();
           }
           hoursChanged();
+          
       });
       
       $("#eh").change(function(){
@@ -176,6 +208,15 @@ include("../inc/header.php");
       });
       
       //ADD EVENTS
+      $("#create-event").click(function(){
+          $('#event-form input[name="location"]').val();
+          $('#event-form textarea').val("");
+          $('#event-form input[name="eventId"]').val(0);
+          updateLocationsSelect();
+          $('#event-form textarea').keyup();
+          userEvent = undefined;
+      });
+      
       $("#event-form #starth").change(function(){
         $.log("Start hour changed");
         var startHour = $(this).val();
@@ -300,7 +341,7 @@ include("../inc/header.php");
             
             //$.log("Form valid.");
              var data = {
-               location: urlencode($('#event-form input[name="location"]').val()),
+                location: urlencode($('#event-form input[name="location"]').val()),
                 st: urlencode($('#event-form select[name="starth"]').val()),
                 et: urlencode($('#event-form select[name="endh"]').val()),
                 desc: urlencode($('#event-form textarea').val()),
@@ -323,6 +364,11 @@ include("../inc/header.php");
                         alert("Error:"+data.error);
                     }else{
                         $.log(data);
+                        if(userEvent != undefined){
+                            calendar.removeEvent(userEvent);    
+                        }
+                        userEvent = data;
+                        calendar.addEvent(data);
                     }
                 },
                 dataType: "json"

@@ -225,7 +225,7 @@ function db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $descrip
 }
 
 function db_getEvent($db, $user_id){
-    $sql = "SELECT events.location location, events.start_hour sh, events.end_hour eh, events.description description FROM events WHERE id = :uid;";
+    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events WHERE id = :uid;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->bindParam(':uid', $user_id);
@@ -235,7 +235,7 @@ function db_getEvent($db, $user_id){
 
 
 function db_getAllEvents($db){
-    $sql = "SELECT events.location location, events.start_hour sh, events.end_hour eh, events.description description FROM events ORDER BY start_hour;";
+    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events ORDER BY start_hour;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -530,7 +530,7 @@ function freeLocations(){
     $end = trim($_POST["end"]);
     $user_id = trim($_SESSION['uid']);
     if(isset($_POST["fakeid"])){
-        $user_id = trim($_SESSION['fakeid']);
+        $user_id = trim($_POST['fakeid']);
     }
     try {
         //connect to db
@@ -684,7 +684,7 @@ function add(){
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         if(db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description)){
-            echo json_encode(array("success" => "ok"));
+            echo json_encode(array("location" => $location, "start_hour" => $sT, "end_hour" => $eT, "description" => $description));
         }else{
             echo json_encode(array("error" => "unknown"));
         }
@@ -720,7 +720,7 @@ function adminEvent(){
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         $event_id = db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $description);
         if($event_id != FALSE){
-            echo json_encode(array("success" => $event_id));
+            echo json_encode(array("id" => $event_id, "location" => $location, "start_hour" => $sT, "end_hour" => $eT, "description" => $description));
         }else{
             echo json_encode(array("error" => "unknown"));
         }

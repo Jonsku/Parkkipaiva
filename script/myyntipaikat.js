@@ -1,3 +1,4 @@
+var userEvent = undefined;
 //execute when DOM is ready
 $(function() {
     createHoursMinutesSelect();
@@ -104,10 +105,11 @@ function showAdmin(show){
 
 function updateEvent(e){
     $("#event-form textarea").val(e.description);
-    $("#event-form #sh").val(e.sh);
-    $("#event-form #eh").val(e.eh);
+    $("#event-form #sh").val(e.start_hour);
+    $("#event-form #eh").val(e.end_hour);
     $("#event-form #location").val(e.location);
     updateLocationsSelect();
+    userEvent = e;
 }
 
 /* clear stand creation form */
@@ -247,6 +249,11 @@ $("#event-form").validate({
                     alert("Error:"+data.error);
                 }else{
                     $.log(data);
+                    if(userEvent != undefined){
+                        calendar.removeEvent(userEvent);    
+                    }
+                    userEvent = data;
+                    calendar.addEvent(data);
                 }
             },
             dataType: "json"

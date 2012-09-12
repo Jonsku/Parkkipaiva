@@ -101,179 +101,11 @@ Tapahtuma toteutetaan avoimena koko kansan ylläkkänä eli Flash Mobina Helsing
 </div>
 
 
-<table width="634" border="0" cellspacing="0" cellpadding="0">
+<table id="events-calendar" width="634" border="0" cellspacing="0" cellpadding="0">
   <tr class="header">
     <?php for($i = $config['start_time'];$i < $config['end_time'];$i++){ ?>
     <td bgcolor="#e8d53e"><?php echo $i; ?>:00 - <?php echo $i+1; ?>:00</td>
     <?php } ?>
-  </tr>
-  <tr>
-    <td><span class="dot">11</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>
-    <td><span class="dot">1</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>
-    <td><span class="dot">1</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>
-    <td><span class="dot">1</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>
-    <td><span class="dot">1</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>
-  </tr>
-  <tr>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-    <td bgcolor="#EFEFEF">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -296,7 +128,13 @@ stringsL10N = new Array();
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/standmap.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/fb.php"></script>    
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/myyntipaikat.js"></script>
+    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/events.js"></script>
     <script type="text/javascript">
+      //init the events timetable
+      var calendar = new EventCalendar();
+      calendar.setTimesAndView(<?php echo $config['start_time']; ?>, <?php echo $config['end_time']; ?>, $("#events-calendar"));
+      calendar.loadEvents();
+      
       $.ajax({
         type: 'POST',
         dataType: "json",
@@ -314,25 +152,6 @@ stringsL10N = new Array();
           }
         }
       });
-      
-      $.ajax({
-        type: 'POST',
-        url: baseUrl+'/data.php?query=getAll',
-        error: function(jqXHR, textStatus, errorThrown){
-            $.log("There was an error.");
-            $.log(jqXHR);
-            $.log(textStatus);
-            return;
-        },
-        success: function(data, textStatus, jqXHR){
-            if(data.error !== undefined){
-                alert("Error:"+data.error);
-            }else{
-                $.log(data);
-            }
-        },
-        dataType: "json"
-    });
     </script>
     
     <script src="<?php echo $config['paths']['base_url']; ?>/bootstrap/js/bootstrap-collapse.js"></script>
