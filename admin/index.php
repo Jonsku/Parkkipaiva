@@ -20,7 +20,7 @@ include("../inc/header.php");
     <!-- navbar ends -->
     
     <!-- content starts -->
-    <div class="container">
+    <div class="container" style="background:#D4F8F3">
         <?php include("../inc/map.php"); ?>
         <div id="map_action">
           <button class="add">Add slot</button>
@@ -29,6 +29,37 @@ include("../inc/header.php");
           Available from <select name="sh" id="sh" class="hour" data-default="14"></select> to <select name="eh" id="eh" class="hour" data-default="19"></select>
         </div>
         
+        <div id="event-editing">
+          <form id="event-form" class="form-vertical" method="post" action="#">
+            <input type="hidden" name="eventId" id="eventId" value="0"/> 
+            <div class="control-group">
+              <label class="control-label" for="desc"><?php s('fi_FI'); ?>Lyhyt kuvaus siitä, mitä myyt (enintään 200 merkkiä)<?php e(); ?> *</label>
+              <div class="controls">
+                <textarea name="desc" id="desc"></textarea><br/>
+                <span id="char-count">0 / 200 <?php s('fi_FI'); ?>merkkiä<?php e(); ?></span>
+              </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label"><?php s('fi_FI'); ?>Aukioloaika<?php e(); ?> *</label>
+                <div class="controls">
+                  Klo. <select name="starth" id="starth" class="hour" data-default="14"></select> - <select name="endh" id="endh" class="hour" data-default="19"></select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label"><?php s('en_EN'); ?>Pick a location for the event<?php e(); ?> *</label>
+                <div class="controls location_select">
+                  <input type="hidden" value="" name="location" id="location"/>
+                </div>
+            </div>
+            
+            <div>
+              <button id="validate" type="submit" class="btn-red"><?php s('en_EN'); ?>Save<?php e(); ?></button>
+            </div>
+              
+          </form>
+      </div>
         
     </div>
     
@@ -38,13 +69,18 @@ include("../inc/header.php");
       stringsL10N = new Array();
       <?php include_once("../l10n_map.php"); ?>
     </script>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.form.js"></script>
+    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/form.util.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/standmap.js"></script>
     <script type="text/javascript">
       var currentSlot = undefined;
      initializeMap();
      createHoursMinutesSelect();
-      $("#sh option").last().remove();
-      $("#eh option").first().remove();
+      $("#sh option, #starth option").last().remove();
+      $("#eh option, #endh option").first().remove();
+      updateLocationsSelect();
+      $("#event-editing").show();
       
       $("#sh").change(function(){
           $.log("Start hour changed");
@@ -81,6 +117,7 @@ include("../inc/header.php");
         return;
       }
       currentSlot.changeHours( $("#sh").val(), $("#eh").val() );
+      updateLocationsSelect();
      }
      
      function locationsLoaded(){
@@ -137,8 +174,165 @@ include("../inc/header.php");
       $("#map_action .remove").click(function(){
         StandsList[$("#map_canvas .locationIcon").length].destroy();
       });
+      
+      //ADD EVENTS
+      $("#event-form #starth").change(function(){
+        $.log("Start hour changed");
+        var startHour = $(this).val();
+        var endHour = $("#event-form #endh").val();
+        if(startHour >= endHour){
+            $("#event-form #endh").val(Number(startHour)+1).change();
+        }
+        updateLocationsSelect();
+    });
+    
+    $("#event-form #endh").change(function(){
+        $.log("End hour changed");
+        var startHour = $("#event-form #starth").val();
+        var endHour = $(this).val();
+        if(endHour <= startHour){
+            $("#event-form #starth").val(Number(endHour)-1).change();
+        }
+        updateLocationsSelect();
+    })
+    
+    function updateLocationsSelect(){
+        var data = {start: $("#event-form #starth").val(), end: $("#event-form #endh").val(), fakeid: $("#event-form #eventId").val()};
+        var selectLoc = $("#event-form #location").val();
+        $.ajax({
+            type: 'POST',
+            url: baseUrl+'/data.php?query=freelocations',
+            data: data,
+            error: function(jqXHR, textStatus, errorThrown){
+                $.log("There was an error.");
+                $.log(jqXHR);
+                $.log(textStatus);
+                return;
+            },
+            success: function(data, textStatus, jqXHR){
+                if(data.error !== undefined){
+                    alert("Error:"+data.error);
+                }else{
+                    $.log(data.success);
+                    $("#event-form span.location").remove();
+                    for(var i in data.success){
+                        var loc = $('<span class="location dot">'+data.success[i]+'</span>');
+                        $(".location_select").append(loc);
+                        if(data.success[i] == selectLoc){
+                            loc.toggleClass('selected');   
+                        }
+                        loc.click(function(){
+                            var wasSelected = $(this).hasClass('selected');
+                            $("#event-form span.location").removeClass('selected');
+                            if( !wasSelected ){
+                                $(this).addClass('selected');
+                                $("#event-form #location").val($(this).text());
+                            }else{
+                                $("#event-form #location").val("");
+                            }
+                        });
+                    }
+                    if($(".location_select .selected").length == 0){
+                        $("#event-form #location").val("");
+                    }
+                    
+                }
+            },
+            dataType: "json"
+        });
+    }
+    
+    /* Update description char count when typing */
+    $('#event-form textarea').keyup(function(){
+        if($(this).val().length > 200){
+            var txt = $(this).val();
+            $(this).val(txt.substring(0,200));
+            return false;
+        }else{
+            $('#char-count').text($(this).val().length + " / 200 "+stringsL10N["merkkiä"]);
+            return true;
+        }
+    });
+    
+    $('#event-editing #validate').click(function(){
+     hideError($('#event-editing'));
+    });
+    
+    //form validation with jQuery plugin
+    $("#event-form").validate({
+        onfocusout: false, 
+        onkeyup: false, 
+        onclick: false, 
+        rules: {
+            location: { required: true },
+            desc: { required: true, maxlength: 200 }
+        },
+        messages: {
+            location: {
+              required: stringsL10N["Please select a location."]
+            },
+            desc: {
+                required: stringsL10N["Tämä kenttä on pakollinen."],
+                maxlength: stringsL10N["Kuvaus voi olla korkeintaan 200 merkkiä pitkä."]
+            }
+        },
+        errorPlacement: function(error,element) {
+                        //add a tooltip message over the invalid field
+                        showError( element.attr('id') != 'location' ? element.attr('id') : 'address', element.attr('id') != 'location' ? error.text() :  stringsL10N["Please select a location."]);
+                        return true;
+                    },
+        submitHandler: function(form){
+            /* Validate form */
+            var errors = new Array();
+            var s = parseInt($('#event-form select[name="starth"]').val());
+            var e = parseInt($('#event-form select[name="endh"]').val());
+            if(s >= e){
+                errors.push({field:"sh", msg:stringsL10N["Sulkemisajan täytyy olla myöhemmin kuin avaamisajan."]});
+            }
+           // $('#stand-admin input[name="tags"]').val("");
+            
+            if(errors.length > 0){
+                ////$.log("Form invalid.");
+                ////$.log(errors);
+                showErrors(errors);
+                return false;
+            }
+            
+            //$.log("Form valid.");
+             var data = {
+               location: urlencode($('#event-form input[name="location"]').val()),
+                st: urlencode($('#event-form select[name="starth"]').val()),
+                et: urlencode($('#event-form select[name="endh"]').val()),
+                desc: urlencode($('#event-form textarea').val()),
+                eventId : urlencode($('#event-form input[name="eventId"]').val())
+             };
+             $.log("Data", data);
+            
+            $.ajax({
+                type: 'POST',
+                url: baseUrl+'/data.php?query=adminEvent',
+                data: data,
+                error: function(jqXHR, textStatus, errorThrown){
+                    $.log("There was an error.");
+                    $.log(jqXHR);
+                    $.log(textStatus);
+                    return;
+                },
+                success: function(data, textStatus, jqXHR){
+                    if(data.error !== undefined){
+                        alert("Error:"+data.error);
+                    }else{
+                        $.log(data);
+                    }
+                },
+                dataType: "json"
+            });
+            return false;
+        }
+    });
     </script>
     <!-- Plugin -->
     <script src="<?php echo $config['paths']['base_url']; ?>/bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="<?php echo $config['paths']['base_url']; ?>/bootstrap/js/bootstrap-tooltip.js"></script>
   </body>
 </html>

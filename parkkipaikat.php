@@ -103,11 +103,9 @@ Tapahtuma toteutetaan avoimena koko kansan ylläkkänä eli Flash Mobina Helsing
 
 <table width="634" border="0" cellspacing="0" cellpadding="0">
   <tr class="header">
-    <td bgcolor="#e8d53e">14:00 - 15:00</td>
-    <td bgcolor="#e8d53e">15:00 - 16:00</td>
-    <td bgcolor="#e8d53e">16:00 - 17:00</td>
-    <td bgcolor="#e8d53e">17:00 - 18:00</td>
-    <td bgcolor="#e8d53e">18:00 - 19:00</td>
+    <?php for($i = $config['start_time'];$i < $config['end_time'];$i++){ ?>
+    <td bgcolor="#e8d53e"><?php echo $i; ?>:00 - <?php echo $i+1; ?>:00</td>
+    <?php } ?>
   </tr>
   <tr>
     <td><span class="dot">11</span> Tässä ensimmäinen paikka. Pullaa ja kahvia.</td>

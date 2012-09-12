@@ -255,8 +255,8 @@ $("#event-form").validate({
     }
 });
 
-$('#stand-admin #validate').click(function(){
-    hideError($('#stand-admin'));
+$('#event-editing #validate').click(function(){
+    hideError($('#event-editing'));
 });
 
 $("#event-form #sh").change(function(){
