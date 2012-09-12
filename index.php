@@ -1,9 +1,8 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Parkkipäivä</title>
-<link href="css/main.css" rel="stylesheet" type="text/css">
+<?php
+require_once("./inc/init.php");
+$page = "Etusivu";
+include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
+?>
 </head>
 
 <body>
@@ -22,11 +21,7 @@
      <!--end of header --></div>
 <div id="content">
       <div class="col1">
-        <ul>
-          <li><a class="active" href="index.html">Etusivu</a></li>
-          <li><a href="parkkipaikat.html">Parkkipaikat</a></li>
-          <li><a href="galleria.html">Galleria</a></li>
-        </ul>
+        <?php include($_SERVER['DOCUMENT_ROOT']."/inc/navbar.php"); ?>
         
         <p class="info">Ilmastoinfo ja Siivouspäivän tiimi järjestävät yhdessä Parkkipäivä Kuvittele – ilman autoja -nimisen tapahtuman kansainvälisenä Park(ing) Day päivänä.
 Tapahtuma toteutetaan avoimena koko kansan ylläkkänä eli Flash Mobina Helsingin keskustan parkkiruuduissa.</p>
@@ -44,18 +39,7 @@ Tapahtuma toteutetaan avoimena koko kansan ylläkkänä eli Flash Mobina Helsing
         <p>Toivoisimme kovasti saavamme myös esiintyjiä mukaan – performanssi voi kestää mitä tahansa viiden minuutin ja viiden tunnin väliltä. Me Siivouspäivän ja Ilmastoinfon tiimi olemme käytettävissä avustajinanne, ja voimme järjestää tarvittavia fasiliteetteja esitystänne varten. </p>
         <p>Toivottavasti lähdette mukaan, ja yhdessä teemme kauniin ja hauskan yhteisöllisen tapahtuman! Pohjimmainen tarkoitus on saattaa kaupunkilaiset hetkeksi yhteen, viettämään aikaa – ja samalla antautumaan kuvitelmille kaupungista, jossa autoja olisi vähemmän. </p>
       </div>  <!--end of content --></div>
-      <div id="footer"><img src="images/footer-temp.gif" width="868" height="72" border="0" usemap="#Map">
-        <map name="Map">
-          <area shape="rect" coords="-11,56,160,68" href="mailto:pauliina@siivouspaiva.com" alt="Pauliina seppälä mail">
-          <area shape="rect" coords="223,56,371,69" href="mailto:tanja@siivouspaiva.com" alt="Tanja">
-          <area shape="rect" coords="434,57,586,71" href="mailto:jaakko@siivouspaiva.com" alt="Jaakko">
-          <area shape="rect" coords="637,55,841,69" href="mailto:kirsi-leena-helle@ilmastoinfo.com" alt="Kirsi-Leena">
-          <area shape="rect" coords="634,3,724,19" href="http://ilmastoinfo.fi/" alt="Ilmastoinfo">
-          <area shape="rect" coords="731,2,809,21" href="http://siivouspaiva.com/" alt="Siivouspäivä">
-          <area shape="rect" coords="819,3,864,22" href="http://www.frendo.fi/" alt="Webdesing by Frendo">
-        </map>      
-    
-    <!--end of footer --></div>
+      <?php include($_SERVER['DOCUMENT_ROOT']."/inc/footer.php"); ?>
   <!--end of wrapper --></div>
 </body>
 </html>

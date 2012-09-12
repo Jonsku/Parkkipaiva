@@ -1,5 +1,5 @@
 #map_canvas{
-  background:url(../images/kartta.jpg) no-repeat;
+  background:url(../images/kartta.png) no-repeat;
   position:relative;
 }
 
@@ -7,11 +7,11 @@
   display:block;
   position:absolute;
   text-align:center;
-  font-size:1.5em;
+  font-size:1.3em;
   font-weight:bold;
   color:white;
   height:33px;
-  padding-top:5px;
+  padding-top:0px;
 }
 
 .locationIcon img{
@@ -33,8 +33,12 @@
  width:38px; 
 }
 
-.locationIcon.single i, .locationIcon.special i{
-  margin-left:-6px;
+.locationIcon.single i{
+  margin-left:-8px;
+}
+
+.locationIcon.special i{
+  display:none;
 }
 
 .locationIcon.double{

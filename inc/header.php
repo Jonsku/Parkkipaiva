@@ -98,7 +98,7 @@ return true;
                 //var d = (this.dataset.default) ? this.dataset.default : 12;
                 var d = this.getAttribute('data-default') ? this.getAttribute('data-default') : 12;
                 d = pad(d,2);
-                for(var h=14;h<20; h++){
+                for(var h=<?php echo $config['start_time']; ?>;h<=<?php echo $config['end_time']; ?>; h++){
                     h = pad(h,2);
                     if(h==d){
                         $(this).append('<option value="'+h+'" selected>'+h+':00</option>');
