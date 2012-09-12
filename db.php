@@ -344,7 +344,7 @@ function db_createUser($db, $email, $fb_id, $password, $name, $phone){
 function db_validateAccount($db, $code){
     global $config;
     //extract id
-    list($seed,$secret) = split("_", $code, 2);
+    list($seed,$secret) = explode("_", $code, 2);
     $id = intval($secret) ^ ( ( intval($seed) << 2 ) ^ ( intval($seed) >> 2 ) );
     $sql = "SELECT COUNT(*) as count FROM events WHERE id = :id AND timestamp = :timestamp;";
     $stmt = $db->prepare($sql);
@@ -528,7 +528,7 @@ function freeLocations(){
     
     $start = trim($_POST["start"]);
     $end = trim($_POST["end"]);
-    $user_id = trim($_SESSION['uid']);
+    $user_id = isset($_SESSION['uid']) ? trim($_SESSION['uid']) : "0";
     if(isset($_POST["fakeid"])){
         $user_id = trim($_POST['fakeid']);
     }
@@ -902,7 +902,7 @@ function emailLogin(){
             $headers .= 'Content-type: text/plain; charset=UTF-8'."\r\n";
             $headers .= 'Content-Transfer-Encoding: 8bit'."\r\n";
             $headers .= "\r\n";
-            mail($email, "=?utf-8?b?".base64_encode("Aseta uusi salasana sivulle siivouspaiva.com")."?=", $message, $headers); //Reset your password on siivouspaiva.com
+            mail($email, "=?utf-8?b?".base64_encode("Aseta uusi salasana sivulle Parkkipaiva.fi")."?=", $message, $headers); //Reset your password on Parkkipaiva.fi
             
             echo json_encode(array("success"=>"1", "link"=>$link));
         }else if($verification["result"] == -1){
@@ -975,7 +975,7 @@ function registerUser(){
                     $headers .= 'Content-type: text/plain; charset=UTF-8'."\r\n";
                     $headers .= 'Content-Transfer-Encoding: 8bit'."\r\n";
                     $headers .= "\r\n";
-                    mail($email, "=?utf-8?b?".base64_encode("Vahvista tili sivulle siivouspaiva.com")."?=", $message, $headers); //Validate your account on siivouspaiva.com
+                    mail($email, "=?utf-8?b?".base64_encode("Vahvista tili sivulle Parkkipaiva.fi")."?=", $message, $headers); //Validate your account on Parkkipaiva.fi
                     
                     echo json_encode(array("success"=>"1", "link"=>$link));
                 }

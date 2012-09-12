@@ -37,6 +37,7 @@ if(isset($_GET['id']) && strpos($_GET['id'],"_") > 0){
    header("HTTP/1.0 404 Not Found");
    exit();
 }
+require_once("./l10n.php");
 ?>
 <!DOCTYPE html>
 <html lang="fi">

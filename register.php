@@ -1,6 +1,5 @@
 <?php
 require_once("./inc/init.php");
-
 require_once($_SERVER['DOCUMENT_ROOT']."/db.php");
 try {
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
@@ -15,6 +14,7 @@ try {
             header("HTTP/1.0 404 Not Found");
             exit();
          }
+require_once("./l10n.php");
 ?>
 <!DOCTYPE html>
 <html lang="fi">
