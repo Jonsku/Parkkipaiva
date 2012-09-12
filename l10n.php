@@ -1,5 +1,5 @@
 <?php
-
+require_once("./inc/init.php");
 $localeToLanguage = array("fi_FI"=>"Suomeksi", "en_EN"=>"In English");
 
 if(!isset($_SESSION['locale'])){
