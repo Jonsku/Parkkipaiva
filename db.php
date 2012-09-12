@@ -165,7 +165,10 @@ function db_getLocations($db){
 }
 
 function db_getFreeLocationsForTime($db, $start, $end, $user_id){
-    $sql = "SELECT locations.id id FROM locations WHERE id NOT IN (SELECT events.location FROM events WHERE (( start_hour BETWEEN :start AND :end ) OR ( end_hour BETWEEN :start AND :end )) AND id != :uid ) AND ((start_hour BETWEEN :start AND :end) OR (end_hour BETWEEN :start AND :end)) ORDER BY id;";
+    //16 - 19
+    //17 - 20
+    //( stand.data.start_time < end_time && stand.data.end_time >= end_time ) || ( stand.data.end_time > start_time && stand.data.end_time <= end_time )
+    $sql = "SELECT locations.id id FROM locations WHERE id NOT IN (SELECT events.location FROM events WHERE (( start_hour < :end AND end_hour >= :end ) OR ( end_hour > :start AND end_hour <= :end )) AND id != :uid ) AND ( (:start BETWEEN start_hour AND end_hour) OR ( :end BETWEEN start_hour AND end_hour) ) AND type < 2 ORDER BY id;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->bindParam(':start', $start);
@@ -189,6 +192,36 @@ function db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description){
     $stmt->bindParam(':uid',$user_id);
     $stmt->execute();
     return true;
+}
+
+function db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $description){
+    $create = false;
+    if($event_id == 0){ //create a new record for the event
+        $sql = "SELECT min(id) FROM events;";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $event_id = intval($stmt->fetchColumn());
+        $event_id--;
+        if($event_id >= 0){
+            $event_id = -1;    
+        }
+        $timestamp = strftime('%s');
+        $sql = "INSERT INTO events (id, email_id, fb_id, password, name, phone, status, timestamp, location, start_hour, end_hour, description) VALUES (:eid, 'cthulhu@parkkipaiva.fi', '1234567890', 'babibel', 'admin', '', 0, :timestamp, :location, :st, :et, :description);";
+        $create = true;
+    }else{
+        $sql = "UPDATE events SET location = :location, start_hour = :st, end_hour = :et, description = :description WHERE id = :eid;";    
+    }
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':location', $location);
+    $stmt->bindParam(':st',$sT);
+    $stmt->bindParam(':et',$eT);
+    $stmt->bindParam(':description',$description);
+    $stmt->bindParam(':eid',$event_id);
+    if($screate){
+        $stmt->bindParam(':timestamp', $timestamp);
+    }
+    $stmt->execute();
+    return $event_id;
 }
 
 function db_getEvent($db, $user_id){
@@ -496,6 +529,9 @@ function freeLocations(){
     $start = trim($_POST["start"]);
     $end = trim($_POST["end"]);
     $user_id = trim($_SESSION['uid']);
+    if(isset($_POST["fakeid"])){
+        $user_id = trim($_SESSION['fakeid']);
+    }
     try {
         //connect to db
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
@@ -649,6 +685,42 @@ function add(){
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         if(db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description)){
             echo json_encode(array("success" => "ok"));
+        }else{
+            echo json_encode(array("error" => "unknown"));
+        }
+        
+        $db = NULL;
+        return;
+    } catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function adminEvent(){
+    if(function_exists('customLog'))
+        customLog("./logs/standsLog.txt", "addAdmin|".json_encode($_POST));
+    /* Validate */
+    $validate = checkRequired(array("eventId"=> true, "location" => true, "st" => true, "et" => true, "desc" => true));
+    if($validate != 1){
+        echo json_encode(array("error"=>$validate));
+        return;
+    }
+    
+    $event_id = trim($_POST["eventId"]);
+    $location = trim($_POST["location"]);
+    $description = trim($_POST["desc"]);
+    $sT = intval($_POST["st"]);
+    $eT = intval($_POST["et"]);
+    
+    //connect to db
+    try {
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        $event_id = db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $description);
+        if($event_id != FALSE){
+            echo json_encode(array("success" => $event_id));
         }else{
             echo json_encode(array("error" => "unknown"));
         }

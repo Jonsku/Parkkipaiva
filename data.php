@@ -1,6 +1,5 @@
 <?php
-ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
-session_start();
+include("./inc/init.php");
 include($_SERVER['DOCUMENT_ROOT']."/db.php");
 
  
@@ -34,6 +33,7 @@ switch($query){
     case "delete_news":
     case "updatelocation":
     case "deletelocation":
+    case "adminEvent":
     if(!isAdmin()){
             echo json_encode(array("error"=>"no pasaran"));
             exit();
@@ -95,6 +95,9 @@ switch($query) {
         break;
     case "freelocations":
         freeLocations();
+        break;
+    case "adminEvent":
+        adminEvent();
         break;
     /* SPECIALS */
     case "mail":
