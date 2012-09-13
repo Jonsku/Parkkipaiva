@@ -125,14 +125,14 @@ function db_getStandIdOfOwner($db, $user_id){
     return $row['id'];
 }
 
-function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label){
+function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label, $description){
     $sql = 'SELECT count(*) FROM locations WHERE id = ?';
     $stmt = $db->prepare($sql);
     $stmt->execute(array($id));
     if($stmt->fetchColumn() == 0){
-        $sql = "INSERT INTO locations (id, x, y, type, start_hour, end_hour, label) VALUES (:id, :x, :y, :type, :start, :end, :label);";
+        $sql = "INSERT INTO locations (id, x, y, type, start_hour, end_hour, label, description) VALUES (:id, :x, :y, :type, :start, :end, :label, :description);";
     }else{
-        $sql = "UPDATE locations SET x = :x, y = :y, type = :type, start_hour = :start, end_hour = :end, label = :label WHERE id = :id;";
+        $sql = "UPDATE locations SET x = :x, y = :y, type = :type, start_hour = :start, end_hour = :end, label = :label, description = :description WHERE id = :id;";
     }
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':id', $id);
@@ -142,6 +142,7 @@ function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label){
     $stmt->bindParam(':start',$sh);
     $stmt->bindParam(':end',$eh);
     $stmt->bindParam(':label',$label);
+    $stmt->bindParam(':description',$description);
     $stmt->execute();
     return true;
 }
@@ -154,7 +155,7 @@ function db_deleteLocation($db, $id){
 }
 
 function db_getLocations($db){
-    $sql = 'SELECT locations.id id, locations.x x, locations.y y, locations.type type, locations.start_hour start_hour, locations.end_hour end_hour, locations.label label FROM locations ORDER BY id;';
+    $sql = 'SELECT locations.id id, locations.x x, locations.y y, locations.type type, locations.start_hour start_hour, locations.end_hour end_hour, locations.label label, locations.description description FROM locations ORDER BY id;';
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -457,7 +458,7 @@ function updateLocation(){
         customLog("./logs/locationChangeLog.txt", json_encode($_POST));
 
     /* Validate */
-    $validate = checkRequired(array("id" => true, "x" => true, "y" => true, "type" => true, "start" => true, "end" => true, "label" => false ));
+    $validate = checkRequired(array("id" => true, "x" => true, "y" => true, "type" => true, "start" => true, "end" => true, "label" => false, "description" => false ));
     if($validate != 1){
         echo json_encode(array("error"=>$validate));
         return;
@@ -470,12 +471,13 @@ function updateLocation(){
     $sh = trim($_POST["start"]);
     $eh = trim($_POST["end"]);
     $label = trim($_POST["label"]);
+    $description = trim($_POST["description"]);
     
     try {
         //connect to db
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        if(db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label)){
+        if(db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label, $description)){
             echo json_encode(array("success" => $id));
         }else{
             echo json_encode(array("error" => "Unable to modify location."));

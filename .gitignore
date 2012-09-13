@@ -1,1 +1,4 @@
 sess_*
+.DS_Store
+site.ini
+inc/init.php

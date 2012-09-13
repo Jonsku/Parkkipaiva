@@ -161,8 +161,8 @@ EventCalendar.prototype.refreshView = function(time){
             var theCell = $($(rows[i]).find("td")[column]);
             
             var content = '<span class="dot">'+this.slots[i-1].id+'</span>';
-            content += this.slots[i-1].hasOwnProperty("label") &&  this.slots[i-1].label != "" && this.slots[i-1].label != null ? '<span class="spot-label">'+this.slots[i-1].label+'</span>': "";
-            content += '<span class="event-description">'+(theEvent === 0 ? "Vapaa" : theEvent.description)+'</span>';
+            content += this.slots[i-1].hasOwnProperty("label") &&  this.slots[i-1].label != "" && this.slots[i-1].label != null ? '<span class="spot-label">'+this.slots[i-1].label+'</span><br>': "";
+            content += '<span class="event-description">'+(theEvent === 0 ? (this.slots[i-1].description === "" ? "Vapaa" : this.slots[i-1].description) : theEvent.description)+'</span>';
             theCell.empty().append(content);
             theCell.off('click');
             theCell.removeClass('empty');

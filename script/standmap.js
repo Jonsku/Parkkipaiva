@@ -67,6 +67,7 @@ Stand.prototype.type = 0;
 Stand.prototype.start_hour = 14;
 Stand.prototype.end_hour = 19;
 Stand.prototype.label = "";
+Stand.prototype.description = "";
 Stand.prototype.edit = false;
 Stand.prototype.elem = undefined;
 
@@ -134,7 +135,7 @@ Stand.prototype.updateLocation = function(){
         $.ajax({
             type: 'POST',
             url: baseUrl+'/data.php?query=updatelocation',
-            data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour, label: this.label},
+            data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour, label: this.label, description: this.description},
             success: function(data, textStatus, jqXHR){
                 if(data.error){
                     alert("Error:"+data.error);
@@ -150,7 +151,7 @@ Stand.prototype.updateData = function(){
     $.ajax({
         type: 'POST',
         url: baseUrl+'/data.php?query=updatelocation',
-        data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour, label: this.label},
+        data: {id : this.id, x : this.x, y : this.y, type: this.type, start: this.start_hour, end: this.end_hour, label: this.label, description: this.description},
         success: function(data, textStatus, jqXHR){
             if(data.error){
                 alert("Error:"+data.error);
@@ -203,6 +204,7 @@ function initializeMap(){
                     newStand.start_hour = data.success[i].start_hour;
                     newStand.end_hour = data.success[i].end_hour;
                     newStand.label = data.success[i].label;
+                    newStand.description = data.success[i].description;
                     newStand.appendToMap();
                     StandsList[newStand.id] = newStand;
                 }

@@ -27,7 +27,10 @@ include("../inc/header.php");
           <select id="slot_type"></select>
           <button class="remove">Remove last slot</button>
           Available from <select name="sh" id="sh" class="hour" data-default="14"></select> to <select name="eh" id="eh" class="hour" data-default="19"></select>
+          <br>
           Label: <input type="text" name="label" id="label" value=""/><button id="changeLabel">Set label</button>
+          <br>
+          Description: <textarea name="spot-description" id="spot-description"></textarea><button id="changeDescription">Set description</button>
         </div>
         
         <br><hr><br>
@@ -167,6 +170,7 @@ include("../inc/header.php");
           $("#sh").val(stand.start_hour);
           $("#eh").val(stand.end_hour);
           $("#label").val(stand.label);
+          $("#spot-description").val(stand.description);
           currentSlot.select();
           $.log("Stand "+stand.id+" clicked");
         });
@@ -192,6 +196,7 @@ include("../inc/header.php");
           newStand.start_hour = $("#sh").val();
           newStand.end_hour = $("#eh").val();
           $("#label").val("");
+          $("#spot-description").val("");
           
           newStand.appendToMap();
           newStand.toggleEdit();
@@ -201,6 +206,7 @@ include("../inc/header.php");
             $("#sh").val(stand.start_hour);
             $("#eh").val(stand.end_hour);
             $("#label").val(stand.label);
+            $("#spot-description").val(stand.description);
             currentSlot.select();
             $.log("Stand "+stand.id+" clicked");
           });
@@ -221,6 +227,16 @@ include("../inc/header.php");
           return false;
         }
         currentSlot.label = $("#label").val();
+        currentSlot.updateData();
+        return false;
+      });
+      
+      $("#changeDescription").click(function(){
+        if(currentSlot === undefined){
+          alert("Select a slot first.");
+          return false;
+        }
+        currentSlot.description = $("#spot-description").val();
         currentSlot.updateData();
         return false;
       });
