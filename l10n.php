@@ -1,5 +1,5 @@
 <?php
-require_once("./inc/init.php");
+require_once(dirname(__FILE__)."/inc/init.php");
 $localeToLanguage = array("fi_FI"=>"Suomeksi", "en_EN"=>"In English");
 
 if(!isset($_SESSION['locale'])){
