@@ -1,7 +1,10 @@
 <?php
 //"Page title as it appears on the navigation bar" => "page file"
 $navigation = array("Etusivu"=>"", //points to index.php
-                     "Parkkipaikat"=>"parkkipaikat.php");
+                     "Parkit"=>"parkkipaikat.php",
+		     "Liity  mukaan"=>"info.php",
+		     "Galleria"=>"galleria.php"
+		     );
 
 //string localization
 require_once($_SERVER['DOCUMENT_ROOT']."/l10n.php");
@@ -14,9 +17,9 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
 <html lang="<?php echo getLangageCode(); ?>">
   <head>
     <meta charset="UTF-8">
-    <title>Parkkipäivä</title>
+    <title><?php echo $title; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:image" content="http://siivouspaiva.com/img/side_illustration.png"/>
+    <meta property="og:image" content="<?php echo $config['paths']['base_url']; ?>/images/parkkilogo.gif"/>
     <meta property="og:type" content="cause" />
     <meta property="og:site_name" content="Siivouspäivä" />
     <meta name="description" content="">
@@ -31,7 +34,7 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="<?php echo $config['paths']['base_url']; ?>/img/text_logo_60_60.jpg">
+    <link rel="shortcut icon" href="<?php echo $config['paths']['base_url']; ?>/images/favicon.ico">
     <!--
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $config['paths']['base_url']; ?>/bootstrap/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $config['paths']['base_url']; ?>/bootstrap/ico/apple-touch-icon-72-precomposed.png">
@@ -50,14 +53,14 @@ if( !( isset($_SESSION['admin']) && $_SESSION['admin'] === 1 ) && loadCache()){
             $.each(['log','warn'], function(i,fn) {
 
                 $[fn] = function() {
-/* */
+/* <?php if($config['debug']) { echo "*/"; } ?>
                     if (!window.console) return;
                     var p = [], a = arguments;
                     for (var i=0; i<a.length; i++)
                         p.push(a[i]) && (i+1<a.length) && p.push(' ');
                     Function.prototype.bind.call(console[fn], console)
                         .apply(this, p);
-/* */
+<?php if($config['debug']) { echo "/*"; } ?> */
 return true;
                 };
                 
@@ -70,11 +73,11 @@ return true;
 			return true;
             });
             $.assert = function() {
-				/**/
+/* <?php if($config['debug']) { echo "*/"; } ?>
                 window.console
                     && Function.prototype.bind.call(console.assert, console)
                        .apply(console, arguments);
-/**/
+<?php if($config['debug']) { echo "/*"; } ?> */
 			return true
             };
         })(jQuery);

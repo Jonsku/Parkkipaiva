@@ -37,5 +37,6 @@ stringsL10N["There is already an account for this email address."] = "<?php s('e
 stringsL10N["This password does not match the first one."] = "<?php s('en_EN'); ?>This password does not match the first one.<?php e(); ?>";
 stringsL10N["Thank you! We just sent you a mail"] = "<?php s('en_EN'); ?>Thank you! We just sent you a mail with a link to validate the account.\nPlease check your inbox for the instruction on how to activate your account before login in..\nYou can close this page if you like.<?php e(); ?>";
 stringsL10N["merkkiä"] = "<?php s('fi_FI'); ?>merkkiä<?php e(); ?>";
+stringsL10N["Please select a location."] = "<?php s('en_EN'); ?>Please select a location.<?php e(); ?>";
 stringsL10N["Are you sure you want to remove your event?"] = "<?php s('en_EN'); ?>Are you sure you want to remove your event?<?php e(); ?>";
 stringsL10N["Are you sure you want to remove this event?"] = "<?php s('en_EN'); ?>Are you sure you want to remove this event?<?php e(); ?>";

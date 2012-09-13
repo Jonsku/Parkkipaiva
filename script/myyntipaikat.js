@@ -223,9 +223,10 @@ $('#confirm-delete .no').click(function(){
 $("#event-form").validate({
     onfocusout: false, 
     onkeyup: false, 
-    onclick: false, 
+    onclick: false,
+    ignore: "",
     rules: {
-        location: { required: true },
+        location: { number:true, required: true },
         desc: { required: true, maxlength: 200 }
     },
     messages: {
@@ -239,7 +240,7 @@ $("#event-form").validate({
     },
     errorPlacement: function(error,element) {
                     //add a tooltip message over the invalid field
-                    showError( element.attr('id') != 'location' ? element.attr('id') : 'address', element.attr('id') != 'location' ? error.text() :  stringsL10N["Please select a location."]);
+                    showError( element.attr('id') != 'location' ? element.attr('id') : 'location_select_wrap', error.text());
                     return true;
                 },
     submitHandler: function(form){

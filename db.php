@@ -218,7 +218,7 @@ function db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $descrip
     $stmt->bindParam(':et',$eT);
     $stmt->bindParam(':description',$description);
     $stmt->bindParam(':eid',$event_id);
-    if($screate){
+    if($create){
         $stmt->bindParam(':timestamp', $timestamp);
     }
     $stmt->execute();

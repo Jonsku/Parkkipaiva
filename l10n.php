@@ -1,5 +1,13 @@
 <?php
+if(isset($_GET["l10n"]) && isset($_SESSION['admin']) && $_SESSION['admin']>0){
+    //Json headers
+    header('Cache-Control: no-cache, must-revalidate');
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    header('Content-type: application/json; charset=utf-8');
+}
+
 require_once(dirname(__FILE__)."/inc/init.php");
+
 $localeToLanguage = array("fi_FI"=>"Suomeksi", "en_EN"=>"In English");
 
 if(!isset($_SESSION['locale'])){
@@ -211,19 +219,12 @@ if(sizeof($_POST) < 1){
     return;
 }
 
-ini_set("session.save_path",$_SERVER['DOCUMENT_ROOT']."/session/");
-session_start();
 if(!isset($_GET["l10n"]) || !isset($_SESSION['admin']) || $_SESSION['admin']<0){
     echo "no-admin";
     return;
 }
 
 $query = trim($_GET["l10n"]);
-
-//Json headers
-header('Cache-Control: no-cache, must-revalidate');
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Content-type: application/json; charset=utf-8');
 
 try {
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/l10n.db');

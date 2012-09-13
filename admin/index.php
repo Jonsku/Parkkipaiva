@@ -2,26 +2,26 @@
 require_once("../inc/init.php");
 $_SESSION['admin'] = 1;
 $page = "Staff Only!";
+$title = "Parkkipäivä. Administration";
 include("../inc/header.php");
 ?>
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
-    <link type="text/css" href="<?php echo $config['paths']['base_url']; ?>/css/jquery.jscrollpane.css" rel="stylesheet" media="all" />
     <link type="text/css" href="<?php echo $config['paths']['base_url']; ?>/css/map.css" rel="stylesheet" media="all" />
-    <!-- Table sorter plugin -->
-    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.jscrollpane.min.js"></script>
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
-  </head>
+</head>
 
-  <body>
-    <!-- header starts -->
-    <?php include("../inc/navbar.php"); ?>
-    <!-- navbar ends -->
-    
-    <!-- content starts -->
-    <div class="container" style="background:#D4F8F3;padding:50px;">
-        <?php include("../inc/map.php"); ?>
+<body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<?php include($_SERVER['DOCUMENT_ROOT']."/inc/navbar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT']."/inc/map.php"); ?>
         <div id="map_action">
           <button class="add">Add slot</button>
           <select id="slot_type"></select>
@@ -53,7 +53,7 @@ include("../inc/header.php");
             
             <div class="control-group">
                 <label class="control-label"><?php s('en_EN'); ?>Pick a location for the event<?php e(); ?> *</label>
-                <div class="controls location_select">
+                <div class="controls location_select" id="location_select_wrap">
                   <input type="hidden" value="" name="location" id="location"/>
                 </div>
             </div>
@@ -75,7 +75,8 @@ include("../inc/header.php");
         </tr>
       </table>
       <br><br>
-    </div>
+ <?php include($_SERVER['DOCUMENT_ROOT']."/inc/footer.php"); ?>
+       <!--end of wrapper -->
     
     <!-- Script -->
     <script type="text/javascript">
@@ -92,6 +93,7 @@ include("../inc/header.php");
     var userEvent = undefined;
     //init the events timetable
     var calendar = new EventCalendar();
+    $("#remove").hide();
     
     //load the event in the form when clicking on the timetable
     calendar.clickCellCallback(function(ev){
@@ -355,9 +357,10 @@ include("../inc/header.php");
     $("#event-form").validate({
         onfocusout: false, 
         onkeyup: false, 
-        onclick: false, 
+        onclick: false,
+        ignore: "",
         rules: {
-            location: { required: true },
+            location: { number:true, required: true },
             desc: { required: true, maxlength: 200 }
         },
         messages: {
@@ -371,7 +374,7 @@ include("../inc/header.php");
         },
         errorPlacement: function(error,element) {
                         //add a tooltip message over the invalid field
-                        showError( element.attr('id') != 'location' ? element.attr('id') : 'address', element.attr('id') != 'location' ? error.text() :  stringsL10N["Please select a location."]);
+                        showError( element.attr('id') != 'location' ? element.attr('id') : 'location_select_wrap', error.text());
                         return true;
                     },
         submitHandler: function(form){
