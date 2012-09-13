@@ -165,12 +165,14 @@ h1 {
 }
 tr {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	color: #333;
+
 	padding-top: 2px;
 	padding-right: 1px;
 	padding-bottom: 2px;
 	padding-left: 1px;
+	font-size: 10px;
+color: #5A5A5A;
+font-weight: bold;
 }
 td {
 	border-top-width: 1px;
@@ -183,8 +185,15 @@ td {
 	border-right-color: #EAEAEA;
 	border-bottom-color: #EAEAEA;
 	border-left-color: #EAEAEA;
-	padding: 2px;
+padding: 4px;
+padding-top: 10px;
+padding-bottom: 10px;
 }
+
+td.empty {
+	background-color: #dbe7a4;
+}
+
 table {
 	border-top-width: 1px;
 	border-right-width: 1px;
@@ -213,13 +222,80 @@ table {
 	display: block;
 	background-repeat: no-repeat;
 	float: left;
-	height: 15px;
-	width: 15px;
+	height: 17px;
+	width: 16px;
 	text-align: center;
 	margin-right: 3px;
 	margin-left: 3px;
 	line-height: 16px;
 }
+button {
+	-webkit-box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
+	-moz-box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
+	box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
+	color:#333;
+	color: #333;
+	border: solid 1px #555;
+	background: #ccc;
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#575757');
+	border:none;
+	font-family:'Helvetica Neue', Arial, sans-serif;
+	font-size:12px;
+	font-weight:700;
+	height:32px;
+    text-shadow:#Fff 0 1px 0  margin-top: 5px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	padding-top: 2px;
+	padding-right: 8px;
+	padding-bottom: 2px;
+	padding-left: 8px;
+	height: 20px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	-webkit-border-radius: 0.6em;
+	-moz-border-radius: 0.6em;
+	border-radius: 0.6em;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+	background: -webkit-gradient(linear, left top, left bottom, from(#dbdbdb), to(#afafaf));
+	background: -moz-linear-gradient(top, #dbdbdb, #afafaf);
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dbdbdb', endColorstr='#afafaf');
+}
+button:hover {
+	background-color:#A6CE39;
+	background: -webkit-gradient(linear, left top, left bottom, from(#aab490), to(#dae0cb));
+	background: -moz-linear-gradient(top, #aab490, #dae0cb);
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aab490', endColorstr='#dae0cb');
+}
+#contact-fb-msg, #check-fb-msg, #no-fb-msg, .fb-register-notice, .forgot-pass-txt {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 12px;
+	line-height: 16px;
+	display: block;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+.control-label, label {
+	color: #98BD34;
+	font-weight: bold;
+}
+a {
+	color: #F27B29;
+}
+textarea {
+	width: 645px;
+}
+#char-count, .controls, .register_info {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-size: 12px;
+}
+#events-calendar tr:nth-child(odd) {
+background-color: #EFEFEF;
+}
+
 
 #event-editing{
   display:none;
