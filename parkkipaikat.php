@@ -95,6 +95,7 @@ Tapahtuma toteutetaan avoimena koko kansan ylläkkänä eli Flash Mobina Helsing
       
       <div>
         <button id="validate" type="submit" class="btn-red"><?php s('en_EN'); ?>Save<?php e(); ?></button>
+        <button id="remove" class="btn-red"><?php s('en_EN'); ?>Remove<?php e(); ?></button>
       </div>
         
     </form>
@@ -126,15 +127,10 @@ stringsL10N = new Array();
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/form.util.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/login.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/standmap.js"></script>
+    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/events.js"></script>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/fb.php"></script>    
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/myyntipaikat.js"></script>
-    <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/events.js"></script>
     <script type="text/javascript">
-      //init the events timetable
-      var calendar = new EventCalendar();
-      calendar.setTimesAndView(<?php echo $config['start_time']; ?>, <?php echo $config['end_time']; ?>, $("#events-calendar"));
-      calendar.loadEvents();
-      
       $.ajax({
         type: 'POST',
         dataType: "json",

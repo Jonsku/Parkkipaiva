@@ -125,14 +125,14 @@ function db_getStandIdOfOwner($db, $user_id){
     return $row['id'];
 }
 
-function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh ){
+function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label){
     $sql = 'SELECT count(*) FROM locations WHERE id = ?';
     $stmt = $db->prepare($sql);
     $stmt->execute(array($id));
     if($stmt->fetchColumn() == 0){
-        $sql = "INSERT INTO locations (id, x, y, type, start_hour, end_hour) VALUES (:id, :x, :y, :type, :start, :end);";
+        $sql = "INSERT INTO locations (id, x, y, type, start_hour, end_hour, label) VALUES (:id, :x, :y, :type, :start, :end, :label);";
     }else{
-        $sql = "UPDATE locations SET x = :x, y = :y, type = :type, start_hour = :start, end_hour = :end WHERE id = :id;";
+        $sql = "UPDATE locations SET x = :x, y = :y, type = :type, start_hour = :start, end_hour = :end, label = :label WHERE id = :id;";
     }
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':id', $id);
@@ -141,6 +141,7 @@ function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh ){
     $stmt->bindParam(':type',$type);
     $stmt->bindParam(':start',$sh);
     $stmt->bindParam(':end',$eh);
+    $stmt->bindParam(':label',$label);
     $stmt->execute();
     return true;
 }
@@ -153,7 +154,7 @@ function db_deleteLocation($db, $id){
 }
 
 function db_getLocations($db){
-     $sql = 'SELECT locations.id id, locations.x x, locations.y y, locations.type type, locations.start_hour start_hour, locations.end_hour end_hour FROM locations;';
+    $sql = 'SELECT locations.id id, locations.x x, locations.y y, locations.type type, locations.start_hour start_hour, locations.end_hour end_hour, locations.label label FROM locations ORDER BY id;';
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -224,6 +225,25 @@ function db_createUpdateAdminEvent($db, $event_id, $location, $sT, $eT, $descrip
     return $event_id;
 }
 
+function db_deleteAdminEvent($db, $event_id){
+    if($event_id > 0){
+        return db_deleteUserEvent($db, $event_id);
+    }
+    $sql = "DELETE FROM events WHERE id = :eid;";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':eid',$event_id);
+    $stmt->execute();
+    return true;
+}
+
+function db_deleteUserEvent($db, $user_id){
+    $sql = "UPDATE events SET location = 0, start_hour = -1, end_hour = -1, description = NULL WHERE id = :uid;";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':uid',$user_id);
+    $stmt->execute();
+    return true;
+}
+
 function db_getEvent($db, $user_id){
     $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events WHERE id = :uid;";
     $stmt = $db->prepare($sql);
@@ -235,7 +255,7 @@ function db_getEvent($db, $user_id){
 
 
 function db_getAllEvents($db){
-    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events ORDER BY start_hour;";
+    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events WHERE location > 0 ORDER BY start_hour;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();
@@ -437,7 +457,7 @@ function updateLocation(){
         customLog("./logs/locationChangeLog.txt", json_encode($_POST));
 
     /* Validate */
-    $validate = checkRequired(array("id" => true, "x" => true, "y" => true, "type" => true, "start" => true, "end" => true ));
+    $validate = checkRequired(array("id" => true, "x" => true, "y" => true, "type" => true, "start" => true, "end" => true, "label" => false ));
     if($validate != 1){
         echo json_encode(array("error"=>$validate));
         return;
@@ -449,12 +469,13 @@ function updateLocation(){
     $type = trim($_POST["type"]);
     $sh = trim($_POST["start"]);
     $eh = trim($_POST["end"]);
+    $label = trim($_POST["label"]);
     
     try {
         //connect to db
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        if(db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh)){
+        if(db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label)){
             echo json_encode(array("success" => $id));
         }else{
             echo json_encode(array("error" => "Unable to modify location."));
@@ -685,6 +706,56 @@ function add(){
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         if(db_createUpdateEvent($db, $user_id, $location, $sT, $eT, $description)){
             echo json_encode(array("location" => $location, "start_hour" => $sT, "end_hour" => $eT, "description" => $description));
+        }else{
+            echo json_encode(array("error" => "unknown"));
+        }
+        
+        $db = NULL;
+        return;
+    } catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function deleteEvent(){    
+    $user_id = trim($_SESSION['uid']);
+    
+    //connect to db
+    try {
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        if(db_deleteUserEvent($db, $user_id)){
+            echo json_encode(array("succes" => "ok"));
+        }else{
+            echo json_encode(array("error" => "unknown"));
+        }
+        
+        $db = NULL;
+        return;
+    } catch (PDOException $e) {
+        echo json_encode(array("error"=>"'Db error: ".$e->getMessage()."'"));
+        $db = NULL;
+        return;
+    }
+}
+
+function deleteAdminEvent(){    
+    $validate = checkRequired( array("eventId"=> true) );
+    if($validate != 1){
+        echo json_encode(array("error"=>$validate));
+        return;
+    }
+    
+    $event_id = trim($_POST["eventId"]);
+    
+    //connect to db
+    try {
+        $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
+        $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        if(db_deleteAdminEvent($db, $event_id)){
+            echo json_encode(array("succes" => $event_id));
         }else{
             echo json_encode(array("error" => "unknown"));
         }

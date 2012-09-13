@@ -27,7 +27,9 @@ include("../inc/header.php");
           <select id="slot_type"></select>
           <button class="remove">Remove last slot</button>
           Available from <select name="sh" id="sh" class="hour" data-default="14"></select> to <select name="eh" id="eh" class="hour" data-default="19"></select>
+          Label: <input type="text" name="label" id="label" value=""/><button id="changeLabel">Set label</button>
         </div>
+        
         <br><hr><br>
         <p>Here you can create and edit events:</p>
         <button id="create-event">Create a new event</button>
@@ -58,6 +60,7 @@ include("../inc/header.php");
             
             <div>
               <button id="validate" type="submit" class="btn-red"><?php s('en_EN'); ?>Save<?php e(); ?></button>
+              <button id="remove" class="btn-red"><?php s('en_EN'); ?>Remove<?php e(); ?></button>
             </div>
               
           </form>
@@ -89,8 +92,7 @@ include("../inc/header.php");
     var userEvent = undefined;
     //init the events timetable
     var calendar = new EventCalendar();
-    calendar.setTimesAndView(<?php echo $config['start_time']; ?>, <?php echo $config['end_time']; ?>, $("#events-calendar"));
-    calendar.loadEvents();
+    
     //load the event in the form when clicking on the timetable
     calendar.clickCellCallback(function(ev){
       $.log("Callback called", ev);
@@ -102,6 +104,7 @@ include("../inc/header.php");
       updateLocationsSelect();
       $('#event-form textarea').keyup();
       userEvent = ev;
+      $("#remove").show();
     });
     
      var currentSlot = undefined;
@@ -161,6 +164,7 @@ include("../inc/header.php");
           $("#slot_type").val(currentSlot.type);
           $("#sh").val(stand.start_hour);
           $("#eh").val(stand.end_hour);
+          $("#label").val(stand.label);
           currentSlot.select();
           $.log("Stand "+stand.id+" clicked");
         });
@@ -171,6 +175,9 @@ include("../inc/header.php");
           }
         });
       }
+      //
+      calendar.setTimesAndView($("#sh option").first().val(), $("#eh option").last().val(),  StandsList, $("#events-calendar"));
+      calendar.loadEvents();
      }
      
       $("#map_action .add").click(function(){
@@ -182,6 +189,8 @@ include("../inc/header.php");
           newStand.type = $("#slot_type").val();
           newStand.start_hour = $("#sh").val();
           newStand.end_hour = $("#eh").val();
+          $("#label").val("");
+          
           newStand.appendToMap();
           newStand.toggleEdit();
           newStand.addListener("clicked", function(stand){
@@ -189,6 +198,7 @@ include("../inc/header.php");
             $("#slot_type").val(currentSlot.type);
             $("#sh").val(stand.start_hour);
             $("#eh").val(stand.end_hour);
+            $("#label").val(stand.label);
             currentSlot.select();
             $.log("Stand "+stand.id+" clicked");
           });
@@ -203,6 +213,16 @@ include("../inc/header.php");
           currentSlot.select();
       });
       
+      $("#changeLabel").click(function(){
+        if(currentSlot === undefined){
+          alert("Select a slot first.");
+          return false;
+        }
+        currentSlot.label = $("#label").val();
+        currentSlot.updateData();
+        return false;
+      });
+      
       $("#map_action .remove").click(function(){
         StandsList[$("#map_canvas .locationIcon").length].destroy();
       });
@@ -215,6 +235,7 @@ include("../inc/header.php");
           updateLocationsSelect();
           $('#event-form textarea').keyup();
           userEvent = undefined;
+          $("#remove").hide();
       });
       
       $("#event-form #starth").change(function(){
@@ -297,6 +318,37 @@ include("../inc/header.php");
     
     $('#event-editing #validate').click(function(){
      hideError($('#event-editing'));
+    });
+    
+    /* delete stand */
+    $('#remove').click(function(){
+        if(confirm(stringsL10N["Are you sure you want to remove this event?"]) != true){
+            return false;
+        }
+        $.ajax({
+            type: 'POST',
+            url: baseUrl+'/data.php?query=deleteAdminEvent',
+            data: { eventId : urlencode($('#event-form input[name="eventId"]').val()) },
+            dataType: "json",
+            error: function(jqXHR, textStatus, errorThrown){
+                $.log("There was an error.");
+                $.log(jqXHR);
+                $.log(textStatus);
+                return;
+            },
+            success: function(data, textStatus, jqXHR){
+                if(data.error){
+                    alert("Error:"+data.error);
+                }else{
+                    $.log("Delete result:", data);
+                    calendar.removeEvent(userEvent);    
+                    userEvent = undefined;
+                    $("#create-event").click();
+                }
+                return;
+            }
+        });
+        return false;
     });
     
     //form validation with jQuery plugin

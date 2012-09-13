@@ -34,6 +34,7 @@ switch($query){
     case "updatelocation":
     case "deletelocation":
     case "adminEvent":
+    case "deleteAdminEvent":
     if(!isAdmin()){
             echo json_encode(array("error"=>"no pasaran"));
             exit();
@@ -53,6 +54,7 @@ switch($query){
     case "delete_favorite":
     case "setpass":
     case "confirm":
+    case "deleteEvent":
         if(!isLogged()){
             echo json_encode(array("error"=>"logged out"));
             exit();
@@ -98,6 +100,12 @@ switch($query) {
         break;
     case "adminEvent":
         adminEvent();
+        break;
+    case "deleteEvent":
+        deleteEvent();
+        break;
+    case "deleteAdminEvent":
+        deleteAdminEvent();
         break;
     /* SPECIALS */
     case "mail":

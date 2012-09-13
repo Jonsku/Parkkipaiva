@@ -57,21 +57,36 @@ EventCalendar.prototype = new EventTarget();
 EventCalendar.prototype.constructor = EventCalendar;
 EventCalendar.prototype.start_hour = 15;
 EventCalendar.prototype.end_hour = 21;
+
 EventCalendar.prototype.view = undefined;
 EventCalendar.prototype.calendar = new Object;
 EventCalendar.prototype.clickCb = undefined;
+EventCalendar.prototype.slots = undefined;
 
 EventCalendar.prototype.clickCellCallback = function(func){
     this.clickCb = func;
 }
 
-EventCalendar.prototype.setTimesAndView = function(start, end, elem){
+EventCalendar.prototype.setTimesAndView = function(start, end, sls, elem){
     this.start_hour = start;
     this.end_hour = end;
     this.view = elem;
     this.calendar = new Object;
+    //$.log(sls);
+    //$.log(sls[2],sls["2"],sls['2']);
+    this.slots = new Array();
+    //var i = 2;
+    for(var i in sls){
+        if(sls[i].type<2){
+            this.slots.push(sls[i]);
+        }
+    }
+    $.log("Slots in calendar", this.slots);
     for(var i=this.start_hour; i<this.end_hour; i++){
-        this.calendar[i] = new Array();
+        this.calendar[i] = new Array(this.slots.length);
+        for(var j = 0; j < this.slots.length; j++){
+            this.calendar[i][j] = 0;
+        }
     }
 }
 
@@ -103,20 +118,23 @@ EventCalendar.prototype.loadEvents = function(){
 
 EventCalendar.prototype.addEvent = function(e){
     for(var i = e.start_hour;i<e.end_hour; i++){
-        this.calendar[i].push(e);
-        this.calendar[i].sort(sortfunction);
+        this.calendar[i][Number(e.location-1)] = e;
+        //this.calendar[i].sort(sortfunction);
         this.refreshView(i);
     }
 }
 
 EventCalendar.prototype.removeEvent = function(e){
     for(var i = e.start_hour;i<e.end_hour; i++){
+        this.calendar[i][Number(e.location-1)] = 0;
+        /*
         var j = 0;
         while( this.calendar[i][j].location != e.location ){
             j++;
         }
         this.calendar[i].splice(j,1);
         $.log("Found at:" + j );
+        */
         //this.calendar[i].push(e);
         //this.calendar[i].sort(sortfunction);
         this.refreshView(i);
@@ -128,7 +146,7 @@ EventCalendar.prototype.refreshView = function(time){
     var column = time-this.start_hour;
     var rows = this.view.find("tr");
     
-    //add more rows if needed (-1 is to accoutn for the header)
+    //add more rows if needed (-1 is to account for the header)
     if(this.calendar[time].length > rows.length-1){
         for(var i=0;i<this.calendar[time].length-rows.length+1;i++){
             this.addRow();
@@ -141,17 +159,27 @@ EventCalendar.prototype.refreshView = function(time){
         if( i <= this.calendar[time].length ){
             var theEvent = this.calendar[time][i-1];
             var theCell = $($(rows[i]).find("td")[column]);
-            theCell.empty().append('<span class="dot">'+theEvent.location+'</span>'+theEvent.description);
+            
+            var content = '<span class="dot">'+this.slots[i-1].id+'</span>';
+            content += this.slots[i-1].hasOwnProperty("label") &&  this.slots[i-1].label != "" && this.slots[i-1].label != null ? '<span class="spot-label">'+this.slots[i-1].label+'</span>': "";
+            content += theEvent === 0 ? "Vapaa" : theEvent.description;
+            theCell.empty().append(content);
             theCell.off('click');
-            theCell.click(function(){
-                if(me.clickCb === undefined){
-                    return;
-                }
-                var column = $(this).parent().children().index(this);
-                var row = $(this).parent().parent().children().index(this.parentNode);
-                var e = me.calendar[Number(me.start_hour+column)][row-1]; //-1 is to account for the header row
-                me.clickCb(e);
-             });
+            theCell.removeClass('empty');
+            if(theEvent != 0){
+                theCell.click(function(){
+                    if(me.clickCb === undefined){
+                        return;
+                    }
+                    var column = $(this).parent().children().index(this);
+                    var row = $(this).parent().parent().children().index(this.parentNode);
+                    $.log(me.calendar[Number(me.start_hour)+Number(column)]);
+                    var e = me.calendar[Number(me.start_hour)+Number(column)][Number(row-1)]; //
+                    me.clickCb(e);
+                 });
+            }else{
+                theCell.addClass('empty');
+            }
         }else{
             var theCell = $($(rows[i]).find("td")[column]);
             theCell.empty();

@@ -1,15 +1,21 @@
 var userEvent = undefined;
+var calendar = new EventCalendar();
+
 //execute when DOM is ready
 $(function() {
     createHoursMinutesSelect();
     $("#event-form #sh option").last().remove();
     $("#event-form #eh option").first().remove();
     updateLocationsSelect();
+    
     initializeMap();
+    $('#remove').hide();
 });
 
 function locationsLoaded(){
-    $.log("Locations loaded");
+    //init the events timetable
+    calendar.setTimesAndView($("#event-form #sh option").first().val(), $("#event-form #eh option").last().val(),  StandsList, $("#events-calendar"));
+    calendar.loadEvents();
 }
 
 /* ------------------------- */
@@ -104,26 +110,23 @@ function showAdmin(show){
 
 
 function updateEvent(e){
+    if(e.location <= 0){
+        return;
+    }
     $("#event-form textarea").val(e.description);
     $("#event-form #sh").val(e.start_hour);
     $("#event-form #eh").val(e.end_hour);
     $("#event-form #location").val(e.location);
     updateLocationsSelect();
     userEvent = e;
+    $('#remove').show();
 }
 
 /* clear stand creation form */
 function clearAdmin(){
-   
-    $('#stand-admin input[name="address"]').val("");
-    $('#stand-admin input[name="city"]').val("");
-    $('#stand-admin input[name="u"]').val("");
-    $('#stand-admin input[name="v"]').val("");
-    $('#stand-admin select[name="sh"]').val(8);
-    $('#stand-admin select[name="sm"]').val(0);
-    $('#stand-admin select[name="eh"]').val(16);
-    $('#stand-admin select[name="em"]').val(0);
-    $('#stand-admin textarea').val("");
+    $('#event-form input[name="location"]').val("");
+    $('#event-form textarea').val("");
+    updateLocationsSelect();
 }
 
 
@@ -141,6 +144,37 @@ $('#event-form textarea').keyup(function(){
 
 
 /* delete stand */
+
+$('#remove').click(function(){
+    if(confirm(stringsL10N["Are you sure you want to remove your event?"]) != true){
+        return false;
+    }
+    $.ajax({
+        type: 'POST',
+        url: baseUrl+'/data.php?query=deleteEvent',
+        dataType: "json",
+        error: function(jqXHR, textStatus, errorThrown){
+            $.log("There was an error.");
+            $.log(jqXHR);
+            $.log(textStatus);
+            return;
+        },
+        success: function(data, textStatus, jqXHR){
+            if(data.error){
+                alert("Error:"+data.error);
+            }else{
+                $.log("Delete result:", data);
+                calendar.removeEvent(userEvent);    
+                userEvent = undefined;
+                $('#remove').hide();
+                clearAdmin();
+            }
+            return;
+        }
+    });
+    return false;
+});
+
 $('#info-btn .delete').click(function(){
     $('#info-btn').hide(300);
     $('#confirm-delete').show();
@@ -254,6 +288,7 @@ $("#event-form").validate({
                     }
                     userEvent = data;
                     calendar.addEvent(data);
+                    $('#remove').show();
                 }
             },
             dataType: "json"
