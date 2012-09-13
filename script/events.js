@@ -162,7 +162,7 @@ EventCalendar.prototype.refreshView = function(time){
             
             var content = '<span class="dot">'+this.slots[i-1].id+'</span>';
             content += this.slots[i-1].hasOwnProperty("label") &&  this.slots[i-1].label != "" && this.slots[i-1].label != null ? '<span class="spot-label">'+this.slots[i-1].label+'</span>': "";
-            content += theEvent === 0 ? "Vapaa" : theEvent.description;
+            content += '<span class="event-description">'+(theEvent === 0 ? "Vapaa" : theEvent.description)+'</span>';
             theCell.empty().append(content);
             theCell.off('click');
             theCell.removeClass('empty');
