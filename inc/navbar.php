@@ -21,7 +21,9 @@
       <p class="info">Parkkipäivä. Kuvittele – ilman autoja on Ilmastoinfon ja Siivouspäivän tiimin järjestämä yhteisöllinen tapahtuma Helsingin keskustassa. </p>
       <p class="info">Kaupunkilaiset kokoontuvat hetkeksi yhteen, viettämään aikaa ja antautumaan kuvitelmille kaupungista, jossa autoja olisi vähemmän ja tilaa ihmisille enemmän. </p>
       <p class="info">Parkkipäivää vietetään 21. syyskuuta, joka on kansainvälinen parkkipaikkojenvaltauspäivä, Park(ing) Day.</p>
+      <?php if(!isset($noLikebox)) { ?>
       <div class="fb-like-box" data-href="https://www.facebook.com/Parkkipaiva" data-width="190" data-height="300" data-show-faces="true" data-stream="false" data-header="false"></div>
+      <?php } ?>
     </div>
     <div class="col2">
     <!-- Section content starts -->

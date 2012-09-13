@@ -16,6 +16,7 @@ if(isset($_POST['create'])){
 
 $page = "Liity  mukaan";
 $title = "Parkkipäivä pe 21.9. 14 – 21  Info";
+$noLikebox = true;
 include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
 ?>
 <link type="text/css" href="<?php echo $config['paths']['base_url']; ?>/css/map.css" rel="stylesheet" media="all" />
