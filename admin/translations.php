@@ -2,7 +2,7 @@
 require_once("../inc/init.php");
 $_SESSION['admin'] = 1;
 $page = "Staff Only!";
-
+$title = "Parkkipäivä. Translations";
 //contains an include of l10n.php
 include("../inc/header.php");
 
@@ -22,15 +22,22 @@ try {
   $db = NULL;
 }
 ?>
-  </head>
-
-  <body>
-    <!-- header starts -->
-    <?php include("../inc/navbar.php"); ?>
-    <!-- navbar ends -->
-    <div id="content">
-      <!-- content starts -->
-      <div class="container">
+<style>
+textarea{
+ max-width:300px !important;
+}
+</style>
+</head>
+<body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<?php include($_SERVER['DOCUMENT_ROOT']."/inc/navbar.php"); ?>
         <div class="row">
           <div class="span12">
             <form id="translation-form" method="POST" class="form-horizontal" action="<?php echo $config['paths']['base_url']; ?>/l10n.php?l10n=fileStrings">
@@ -93,6 +100,7 @@ try {
         </table>
       <?php } ?>
     </div>
+     <?php include($_SERVER['DOCUMENT_ROOT']."/inc/footer.php"); ?>
     <script type="text/javascript" src="<?php echo $config['paths']['base_url']; ?>/script/jquery.form.js"></script>
     <script type="text/javascript">
     localeToLanguage = <?php echo json_encode($localeToLanguage); ?>;

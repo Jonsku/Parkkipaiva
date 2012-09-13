@@ -1,4 +1,8 @@
 <?php
+//Json headers
+header('Cache-Control: no-cache, must-revalidate');
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Content-type: application/json; charset=utf-8');
 include("./inc/init.php");
 include($_SERVER['DOCUMENT_ROOT']."/db.php");
 
@@ -18,10 +22,8 @@ $query = trim($_GET["query"]);
 foreach($_POST as $key => $b){
     $_POST[$key] = urldecode($_POST[$key]);
 }
-//Json headers
-header('Cache-Control: no-cache, must-revalidate');
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Content-type: application/json; charset=utf-8');
+
+
 
 //all the queries that need the user to be an admin
 switch($query){
