@@ -159,7 +159,10 @@ EventCalendar.prototype.refreshView = function(time){
         if( i <= this.calendar[time].length ){
             var theEvent = this.calendar[time][i-1];
             var theCell = $($(rows[i]).find("td")[column]);
-            
+            //check that the slot is not empty
+            if(this.slots[i-1] === undefined){
+                continue;
+            }
             var content = '<span class="dot">'+this.slots[i-1].id+'</span>';
             content += this.slots[i-1].hasOwnProperty("label") &&  this.slots[i-1].label != "" && this.slots[i-1].label != null ? '<span class="spot-label">'+this.slots[i-1].label+'</span><br>': "";
             content += '<span class="event-description">'+(theEvent === 0 ? (this.slots[i-1].description === "" ? "Vapaa" : this.slots[i-1].description) : theEvent.description)+'</span>';

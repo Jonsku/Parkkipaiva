@@ -171,6 +171,8 @@ Stand.prototype.destroy = function(){
             success: function(data, textStatus, jqXHR){
                 if(data.error){
                     alert("Error:"+data.error);
+                }else if(data.hasOwnProperty('not_empty')){
+                    alert("This spot can not be deleted because they are "+data['not_empty']+" event(s) taking place there.\n Please remove the events before deleting the spot.");
                 }else{
                     $.log("Slot deleted");
                     StandsList[data.success].fire("destroyed");
