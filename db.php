@@ -147,6 +147,13 @@ function db_createUpdateLocation($db, $id, $x, $y, $type, $sh, $eh, $label, $des
     return true;
 }
 
+function db_locationEventCount($db, $id){
+    $sql = "SELECT COUNT(*) FROM events WHERE location = ?;";
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array($id));
+    return $stmt->fetchColumn();
+}
+
 function db_deleteLocation($db, $id){
     $sql = "DELETE FROM locations WHERE id = ?;";
     $stmt = $db->prepare($sql);
@@ -504,7 +511,10 @@ function deleteLocation(){
         //connect to db
         $db = new PDO('sqlite:'.dirname(__FILE__).'/db/data.db');
         $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        if(db_deleteLocation($db, $id)){
+        $eventCount = db_locationEventCount($db, $id);
+        if($eventCount > 0){
+            echo json_encode(array("not_empty" => $eventCount));
+        }else if(db_deleteLocation($db, $id)){
             echo json_encode(array("success" => $id));
         }else{
             echo json_encode(array("error" => "Unable to modify location."));
