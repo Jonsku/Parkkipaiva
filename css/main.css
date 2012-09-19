@@ -231,16 +231,17 @@ table#info-calendar {
 	font-size: 12px;
 	font-weight: bold;
 	color: #FFF;
-	background-image: url(../images/dot_bg.gif);
+	backgrou	nd-image: url(../images/dot_bg2.png);
 	display: block;
 	background-repeat: no-repeat;
 	float: left;
 	height: 17px;
-	width: 16px;
+	width: 17px;
 	text-align: center;
 	margin-right: 3px;
-	margin-left: 3px;
+	margin-left: 1px;
 	line-height: 16px;
+	background-image: url(../images/dot_bg2.png);
 }
 button {
 	-webkit-box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
