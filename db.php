@@ -246,7 +246,7 @@ function db_deleteUserEvent($db, $user_id){
 }
 
 function db_getEvent($db, $user_id){
-    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events WHERE id = :uid;";
+    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description, events.name name, events.email_id email, events.phone phone, events.fb_id fb FROM events WHERE id = :uid;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->bindParam(':uid', $user_id);
@@ -256,7 +256,7 @@ function db_getEvent($db, $user_id){
 
 
 function db_getAllEvents($db){
-    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description FROM events WHERE location > 0 ORDER BY start_hour;";
+    $sql = "SELECT events.id id, events.location location, events.start_hour start_hour, events.end_hour end_hour, events.description description, events.name name, events.email_id email, events.phone phone, events.fb_id fb FROM events WHERE location > 0 ORDER BY start_hour;";
     $stmt = $db->prepare($sql);
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $stmt->execute();

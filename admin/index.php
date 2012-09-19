@@ -37,6 +37,15 @@ include("../inc/header.php");
         <p>Here you can create and edit events:</p>
         <button id="create-event">Create a new event</button>
         <div id="event-editing">
+          <div id="contact_details">
+              <h4>Contact details</h4>
+              <b>Name: </b><span class="name"></span><br>
+              <b>Email: </b><span class="email"></span><br>
+              <b>Phone: </b><span class="phone"></span><br>
+              <b>Has a Facebook account: </b><span class="fb"></span><br>
+              <br>
+          </div>
+            
           <form id="event-form" class="form-vertical" method="post" action="#">
             <input type="hidden" name="eventId" id="eventId" value="0"/> 
             <div class="control-group">
@@ -97,6 +106,7 @@ include("../inc/header.php");
     //init the events timetable
     var calendar = new EventCalendar();
     $("#remove").hide();
+    $("#contact_details").hide();
     
     //load the event in the form when clicking on the timetable
     calendar.clickCellCallback(function(ev){
@@ -109,6 +119,15 @@ include("../inc/header.php");
       updateLocationsSelect();
       $('#event-form textarea').keyup();
       userEvent = ev;
+      if(ev.id > 0){ //user event, show contact details
+        $("#contact_details .name").text(ev.name);
+        $("#contact_details .email").text(ev.email);
+        $("#contact_details .phone").text(ev.phone);
+        $("#contact_details .fb").text(ev.fb && ev.fb != null && ev.fb != "" && ev.fb > 0 ? "Yes":"No");
+        $("#contact_details").show();
+      }else{
+        $("#contact_details").hide();
+      }
       $("#remove").show();
     });
     
@@ -219,6 +238,7 @@ include("../inc/header.php");
           StandsList[newStand.id] = newStand;
           currentSlot = newStand;
           currentSlot.select();
+          $("#contact_details").hide();
       });
       
       $("#changeLabel").click(function(){
