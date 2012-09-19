@@ -15,7 +15,7 @@ if(!isset($_GET["query"]) || trim($_GET["query"]) == ""){
     exit();
 }
 
-include($_SERVER['DOCUMENT_ROOT']."/log.php");
+include($_SERVER['DOCUMENT_ROOT']."log.php");
 
 $query = trim($_GET["query"]);
 //handle query

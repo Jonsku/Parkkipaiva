@@ -1,7 +1,7 @@
 <?php
 require_once("./inc/init.php");
 $page = "Galleria";
-$title = "Parkkipäivä pe 21.9. 14 – 21 – Galleria";
+$title = "Parkkipäivä pe 21.9. 15 – 21 – Galleria";
 include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
 ?>
 </head>

@@ -106,10 +106,20 @@ p.info {
 	font-variant: normal;
 	color: #88a33f;
 }
+p.small {
+	font-size: 10px;
+	color: #7b8d63;
+	font-family: Verdana, Geneva, sans-serif;
+	line-height: 15px;
+}
 h1 {
 	font-size: 26px;
 	line-height: 30px;
 	margin-top: 0px;
+}
+h2 {
+	font-size: 18px;
+	margin-top: 40px;
 }
 
 .col1 ul {
@@ -153,14 +163,15 @@ h1 {
 	margin-bottom: 30px;
 }
 .header td {
-	background-color: #E8D53E;
+	background-color: #F27B29;
 	height: 15px;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
-	color: #333;
+	color: #FFF;
 	text-align: center;
 	padding: 5px;
+	width: 105px;
 }
 tr {
 	font-family: Arial, Helvetica, sans-serif;
@@ -187,6 +198,7 @@ td {
 padding: 4px;
 padding-top: 10px;
 padding-bottom: 10px;
+vertical-align:top;
 }
 
 td.empty {
@@ -194,18 +206,20 @@ td.empty {
 }
 
 table {
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-top-style: solid;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #E8D53E;
-	border-right-color: #E8D53E;
-	border-bottom-color: #E8D53E;
-	border-left-color: #E8D53E;
+	border: 1px solid #CCC;
+}
+#info-calendar td {
+	width: 107px;
+	padding-right: 1px;
+}
+table#info-calendar {
+	border-top-style: none;
+}
+#info-calendar .dot {
+	background-color: #cd1056;
+	background-image: none;
+	width: 90px;
+	margin-bottom: 3px;
 }
 
 #events-calendar tr:nth-child(odd){
@@ -232,11 +246,9 @@ button {
 	-webkit-box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
 	-moz-box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
 	box-shadow:rgba(0,0,0,0.2) 0 1px 0 0;
-	color:#333;
-	color: #333;
+	color: white;
 	border: solid 1px #555;
 	background: #ccc;
- filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#575757');
 	border:none;
 	font-family:'Helvetica Neue', Arial, sans-serif;
 	font-size:12px;
@@ -258,15 +270,15 @@ button {
 	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-	background: -webkit-gradient(linear, left top, left bottom, from(#dbdbdb), to(#afafaf));
-	background: -moz-linear-gradient(top, #dbdbdb, #afafaf);
- filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dbdbdb', endColorstr='#afafaf');
+	background: -webkit-gradient(linear, left top, left bottom, from(#f3a46f), to(#f37b29));
+	background: -moz-linear-gradient(top, #f3a46f, #f37b29);
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3a46f', endColorstr='#f37b29');
 }
 button:hover {
 	background-color:#A6CE39;
-	background: -webkit-gradient(linear, left top, left bottom, from(#aab490), to(#dae0cb));
-	background: -moz-linear-gradient(top, #aab490, #dae0cb);
- filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aab490', endColorstr='#dae0cb');
+	background: -webkit-gradient(linear, left top, left bottom, from(#f37b29), to(#f3a46f));
+	background: -moz-linear-gradient(top, #f37b29, #f3a46f);
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f37b29', endColorstr='#f3a46f');
 }
 #contact-fb-msg, #check-fb-msg, #no-fb-msg, .fb-register-notice, .forgot-pass-txt {
 	font-family: Georgia, "Times New Roman", Times, serif;
@@ -305,4 +317,7 @@ background-color: #EFEFEF;
 
 #logout-btn, #register-email .permission_info, #register-email, #login-email-dont-exist, #login-email-exist,#email-login-form, #email-login-form .register_info,.fb-register-notice,#fb-save-account-btn, #fb-login{
   display:none;
+}
+#map_canvas {
+	margin-top: 8px;
 }
