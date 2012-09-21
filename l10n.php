@@ -83,7 +83,12 @@ function getCountryCode(){
     return $country;
 }
 
-function getBrowserLocale(){
+function getBrowserLocale(){ 
+    global $stringDefaultLocale;
+    if(!isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])){
+	//default
+    	return $stringDefaultLocale;
+    }
     $bLocale = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
     $bLocale = $bLocale[0];
     //turn it to a locale if only langage is provided

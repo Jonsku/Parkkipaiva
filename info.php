@@ -36,14 +36,9 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
         <p class="small"LANG="" ALIGN="LEFT">*HUOM! Parkin voi varata myös lyhyeksi ajaksi, vaikka viiden minuutin esitykseen. Ota silloin yhteyttä pauliina@siivouspaiva.com, tanja@siivouspaiva.com tai jaakko@siivouspaiva.com<br>
         </p>
 <h2>Ilmoittautuminen</h2>
-  <div id="login_row">
-  <div class="span12 inset">
-    <!-- Login/out -->
-    <!-- <p id="login-text"><?php s(); ?>Kirjaudu sisään Facebook-tunnuksillasi lisätäksesi karttaan myyntipaikkasi tai muokataksesi merkintöjäsi.<?php e(); ?></p> -->
-    <a name="login"><button id="logout-btn" class="btn-red"><?php s('en_EN'); ?>Log out<?php e(); ?></button><button id="email-login-select" class="btn-red login-btn"><?php s('en_EN'); ?>Login with an email address<?php e(); ?></button><button id="fb-login" class="btn-red login-btn"><?php s('en_EN'); ?>Login with a facebook account<?php e(); ?></button></a><span id="contact-fb-msg"><?php s('en_EN'); ?>Contacting facebook...<?php e(); ?></span><span id="check-fb-msg"><?php s('en_EN'); ?>Checking if you're logged in...<?php e(); ?></span><span id="no-fb-msg"><?php s('en_EN'); ?>Facebook is not responding...<?php e(); ?></span>
-    <?php include($_SERVER['DOCUMENT_ROOT']."/inc/login.php"); ?>
-  </div>
-</div>
+
+<p>Ennakkoilmoittautuminen Parkkipäivään on päättynyt. Mukaan mahtuu vielä: <a href="https://www.facebook.com/Parkkipaiva">https://www.facebook.com/Parkkipaiva</a></p>
+ 
 
 <img src="images/kartta.gif" width="645" height="371">
 

@@ -24,7 +24,7 @@ include($_SERVER['DOCUMENT_ROOT']."/inc/header.php");
           <br>
         Mukana <a href="http://ilmastoinfo.fi/">Ilmastoinfo</a> &amp; <a href="http://siivouspaiva.com/">Siivouspäivän</a> tiimi. </p>
 <h2>Tapahtumakartta</h2>
-        <p>Tarkempia tietoja parkkipäivän <a href="parkkipaikat.php">ohjelmasta</a> ja <a href="info.php">ilmoittautumiset</a>.</p>
+        <p>Tarkempia tietoja parkkipäivän <a href="parkkipaikat.php">ohjelmasta</a>.</p>
   <h2><a href="parkkipaikat.php"><img src="images/kartta.gif" alt="Parkkipaikat kartalla" width="645" height="371" border="0"></a></h2><br>
       <?php include($_SERVER['DOCUMENT_ROOT']."/inc/footer.php"); ?>
 </body>
